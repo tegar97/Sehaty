@@ -68,7 +68,10 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+
     implementation(libs.androidx.material3)
+
+    implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.androidx.room)
     ksp(libs.androidx.room.compiler)
@@ -87,6 +90,8 @@ dependencies {
     implementation(libs.androidx.camera.video)
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.extensions)
+
+    implementation(libs.vanniktech.android.image.cropper)
 
     // Testing && Debug
     testImplementation(libs.junit)
