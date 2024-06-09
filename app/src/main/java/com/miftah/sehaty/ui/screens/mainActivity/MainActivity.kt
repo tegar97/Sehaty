@@ -1,4 +1,4 @@
-package com.miftah.sehaty
+package com.miftah.sehaty.ui.screens.mainActivity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
