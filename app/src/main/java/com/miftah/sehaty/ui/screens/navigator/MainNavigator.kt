@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun MainNavigator() {
-    val bottomNavigatorIcon = remember {
+    /*val bottomNavigatorIcon = remember {
 
-    }
+    }*/
 }
