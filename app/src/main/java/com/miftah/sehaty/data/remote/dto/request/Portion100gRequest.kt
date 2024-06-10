@@ -1,4 +1,4 @@
-package com.miftah.sehaty.data.remote.dto
+package com.miftah.sehaty.data.remote.dto.request
 
 data class Portion100gRequest(
     val dietaryFiber: Double,

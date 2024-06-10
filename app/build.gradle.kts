@@ -84,6 +84,8 @@ dependencies {
     implementation(libs.squareup.retrofit2.converter.gson)
     implementation(libs.squareup.okhttp3.logging)
 
+    implementation(libs.coil.compose)
+
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.camera2)
     implementation(libs.androidx.camera.lifecycle)
@@ -92,6 +94,8 @@ dependencies {
     implementation(libs.androidx.camera.extensions)
 
     implementation(libs.vanniktech.android.image.cropper)
+
+    implementation(libs.androidx.datastore.preferences)
 
     // Testing && Debug
     testImplementation(libs.junit)

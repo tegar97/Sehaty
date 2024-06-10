@@ -1,6 +1,6 @@
 package com.miftah.sehaty.domain.model
 
-import com.miftah.sehaty.data.remote.dto.FoodScannedRequest
+import com.miftah.sehaty.data.remote.dto.request.FoodScannedRequest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File

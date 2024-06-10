@@ -1,8 +1,6 @@
 package com.miftah.sehaty.domain.model
 
-import com.google.gson.annotations.SerializedName
-import com.miftah.sehaty.data.remote.dto.NutritionRequest
-import com.miftah.sehaty.data.remote.dto.Portion100gRequest
+import com.miftah.sehaty.data.remote.dto.request.NutritionRequest
 
 data class Nutrition(
     val dietaryFiber: Int,
