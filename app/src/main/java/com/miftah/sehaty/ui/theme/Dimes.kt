@@ -12,7 +12,7 @@ data class Dimens(
     val medium2: Dp = 0.dp,
     val medium3: Dp = 0.dp,
     val large: Dp = 0.dp,
-    val buttonHeight: Dp = 32.dp,
+    val buttonHeight: Dp = 60.dp,
     val logoSize: Dp = 24.dp
 )
 

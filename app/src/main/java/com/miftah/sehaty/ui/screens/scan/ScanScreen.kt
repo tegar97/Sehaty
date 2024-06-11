@@ -27,12 +27,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -46,7 +49,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -60,6 +65,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
@@ -73,6 +79,7 @@ import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
+import com.miftah.sehaty.ui.screens.common.ButtonPrimary
 import com.miftah.sehaty.ui.theme.SehatyTheme
 import com.miftah.sehaty.ui.theme.dimens
 import com.miftah.sehaty.utils.reduceFileImage
@@ -88,6 +95,7 @@ import java.io.File
 fun ScanScreen(modifier: Modifier = Modifier) {
     var currentProgress by remember { mutableStateOf(0f) }
 
+    var itemName by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val scaffoldState = rememberBottomSheetScaffoldState()
@@ -106,9 +114,9 @@ fun ScanScreen(modifier: Modifier = Modifier) {
                 val reducedFile = imageFile.reduceFileImageCompat()
                 Log.d("URI -> FILE (Compat)", reducedFile.path)
             }
-            scope.launch {
+            /*scope.launch {
                 scaffoldState.bottomSheetState.expand()
-            }
+            }*/
         }
     }
     val launcher = rememberLauncherForActivityResult(
@@ -138,6 +146,9 @@ fun ScanScreen(modifier: Modifier = Modifier) {
                     }
                 }*/
                 saveToUri(result.uriContent)
+                scope.launch {
+                    scaffoldState.bottomSheetState.expand()
+                }
             } else {
                 //If something went wrong you can handle the error here
                 println("ImageCropping error: ${result.error}")
@@ -155,8 +166,10 @@ fun ScanScreen(modifier: Modifier = Modifier) {
             imageUri,
             context,
             scope,
-            imageCropLauncher,
-            cropOptions
+            itemName,
+            {
+
+            }
         )
     } else {
         CameraXExecutors(
@@ -166,7 +179,9 @@ fun ScanScreen(modifier: Modifier = Modifier) {
             context,
             scope,
             scaffoldState,
-            saveToUri
+            saveToUri,
+            imageCropLauncher,
+            cropOptions,
         )
     }
 }
@@ -193,19 +208,20 @@ fun BottomSheetResult(
     imageUri: Uri?,
     context: Context,
     scope: CoroutineScope,
-    imageCropLauncher: ManagedActivityResultLauncher<CropImageContractOptions, CropImageView.CropResult>,
-    cropOptions: CropImageContractOptions
+    itemName: String,
+    onItemName: ((String) -> Unit)
 ) {
     BottomSheetScaffold(
+        modifier = modifier.windowInsetsPadding(WindowInsets.ime),
+        sheetSwipeEnabled = false,
         scaffoldState = scaffoldState,
         sheetPeekHeight = 0.dp,
         sheetContent = {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 modifier = modifier.padding(16.dp)
             ) {
-                Text(
+/*                Text(
                     "Loading ....", style = MaterialTheme.typography.bodyLarge.copy(
                         fontSize = 18.sp,
                         textAlign = TextAlign.Center,
@@ -224,14 +240,31 @@ fun BottomSheetResult(
                 }) {
                     Text(text = "Crop!")
                 }
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(12.dp))*/
+                Text(text = "Masukan Nama Makanan")
+                Spacer(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .height(MaterialTheme.dimens.small2)
+                )
+                OutlinedTextField(
+                    modifier = modifier.fillMaxWidth(),
+                    value = itemName,
+                    onValueChange = onItemName
+                )
+                Spacer(modifier = modifier.height(MaterialTheme.dimens.small2))
+                ButtonPrimary(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .height(MaterialTheme.dimens.buttonHeight),
+                )
+
             }
         }) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-
             imageBitmap.value?.let {
                 Row(
                     modifier = Modifier
@@ -239,16 +272,16 @@ fun BottomSheetResult(
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    IconButton(onClick = {
-                        /*imageBitmap.value = null
-                        imageUri = null*/
+/*                    IconButton(onClick = {
+                        imageBitmap.value = null
+                        imageUri = null
                     }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Open Gallery",
                             modifier = Modifier.size(24.dp)
                         )
-                    }
+                    }*/
                 }
             }
 
@@ -257,7 +290,7 @@ fun BottomSheetResult(
                     .fillMaxSize()
                     .weight(1f)
             ) {
-                imageBitmap.value?.let { bitmap ->
+/*                imageBitmap.value?.let { bitmap ->
                     Image(
                         bitmap = bitmap.asImageBitmap(),
                         contentDescription = null,
@@ -265,7 +298,7 @@ fun BottomSheetResult(
                             .fillMaxSize()
                             .background(Color.Black)
                     )
-                }
+                }*/
                 imageUri?.let {
                     if (Build.VERSION.SDK_INT < 28) {
                         imageBitmap.value = MediaStore.Images
@@ -283,28 +316,27 @@ fun BottomSheetResult(
                             contentDescription = null,
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(Color.Black)
+                                .background(Color.Black),
+                            contentScale = ContentScale.Crop
                         )
                     }
                 }
-
-                // Position the ArrowUpward icon at the bottom center
-                IconButton(
-                    onClick = {
-                        scope.launch {
-                            scaffoldState.bottomSheetState.expand()
-                        }
-                    },
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.KeyboardArrowUp,
-                        contentDescription = "Open Gallery",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                /*                IconButton(
+                                    onClick = {
+                                        scope.launch {
+                                            scaffoldState.bottomSheetState.expand()
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .padding(bottom = 16.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.KeyboardArrowUp,
+                                        contentDescription = "Open Gallery",
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }*/
             }
         }
 
@@ -321,6 +353,8 @@ fun CameraXExecutors(
     scope: CoroutineScope,
     scaffoldState: BottomSheetScaffoldState,
     saveToUri: (Uri?) -> Unit,
+    imageCropLauncher: ManagedActivityResultLauncher<CropImageContractOptions, CropImageView.CropResult>,
+    cropOptions: CropImageContractOptions,
 ) {
     Column {
         Box(
