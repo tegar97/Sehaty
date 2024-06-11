@@ -20,7 +20,7 @@ fun NavGraph(
             route = Route.AppStartNavigation.route,
             startDestination = Route.HomeScreen.route
         ) {
-            composable(route = Route.MainNavigator.route) {
+            composable(route = Route.HomeScreen.route) {
                 MainNavigator()
             }
         }

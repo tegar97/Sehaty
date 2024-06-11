@@ -2,6 +2,7 @@ package com.miftah.sehaty.ui.screens.navigator.navigators
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -16,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,7 +44,6 @@ fun MainBottomBar(
 ) {
     BottomAppBar(
         modifier = modifier
-            .height(65.dp)
             .clip(RoundedCornerShape(15.dp, 15.dp, 0.dp, 0.dp)),
     ) {
         items.forEachIndexed { index, item ->
@@ -75,12 +76,22 @@ private fun MainBottomBarPrev() {
     )
     var selectedItem by remember { mutableIntStateOf(0) }
     SehatyTheme {
-        MainBottomBar(
-            items = items,
-            onSelectedChange = {
-                selectedItem = it
-            },
-            selectedItem = selectedItem
-        )
+        Scaffold(
+            bottomBar = {
+                MainBottomBar(
+                    items = items,
+                    onSelectedChange = {
+                        selectedItem = it
+                    },
+                    selectedItem = selectedItem
+                )
+            }
+        ) {
+            Surface(
+                modifier = Modifier.padding(it)
+            ) {
+
+            }
+        }
     }
 }

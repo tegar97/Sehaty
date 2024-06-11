@@ -3,8 +3,11 @@ package com.miftah.sehaty.ui.screens.mainActivity
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class MainViewModel : ViewModel() {
+@HiltViewModel
+class MainViewModel @Inject constructor(): ViewModel() {
     val visiblePermissionDialogQueue = mutableStateListOf<String>()
     var isPermissionAcquire = mutableStateOf(false)
 

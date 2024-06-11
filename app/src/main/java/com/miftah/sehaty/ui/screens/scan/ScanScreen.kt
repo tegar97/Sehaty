@@ -114,9 +114,9 @@ fun ScanScreen(modifier: Modifier = Modifier) {
                 val reducedFile = imageFile.reduceFileImageCompat()
                 Log.d("URI -> FILE (Compat)", reducedFile.path)
             }
-            /*scope.launch {
+            scope.launch {
                 scaffoldState.bottomSheetState.expand()
-            }*/
+            }
         }
     }
     val launcher = rememberLauncherForActivityResult(
@@ -136,21 +136,11 @@ fun ScanScreen(modifier: Modifier = Modifier) {
     val imageCropLauncher =
         rememberLauncherForActivityResult(contract = CropImageContract()) { result ->
             if (result.isSuccessful) {
-                /*result.uriContent?.let {
-                    //getBitmap method is deprecated in Android SDK 29 or above so we need to do this check here
-                    imageBitmap.value = if (Build.VERSION.SDK_INT < 28) {
-                        MediaStore.Images.Media.getBitmap(context.contentResolver, it)
-                    } else {
-                        val source = ImageDecoder.createSource(context.contentResolver, it)
-                        ImageDecoder.decodeBitmap(source)
-                    }
-                }*/
                 saveToUri(result.uriContent)
                 scope.launch {
                     scaffoldState.bottomSheetState.expand()
                 }
             } else {
-                //If something went wrong you can handle the error here
                 println("ImageCropping error: ${result.error}")
             }
         }
@@ -165,23 +155,19 @@ fun ScanScreen(modifier: Modifier = Modifier) {
             imageBitmap,
             imageUri,
             context,
-            scope,
             itemName,
-            {
-
+            onCropAction = {
+                imageCropLauncher.launch(cropOptions)
             }
-        )
+        ) {}
+
     } else {
         CameraXExecutors(
             modifier,
             controller,
             launcher,
             context,
-            scope,
-            scaffoldState,
             saveToUri,
-            imageCropLauncher,
-            cropOptions,
         )
     }
 }
@@ -207,8 +193,8 @@ fun BottomSheetResult(
     imageBitmap: MutableState<Bitmap?>,
     imageUri: Uri?,
     context: Context,
-    scope: CoroutineScope,
     itemName: String,
+    onCropAction: (() -> Unit),
     onItemName: ((String) -> Unit)
 ) {
     BottomSheetScaffold(
@@ -221,26 +207,6 @@ fun BottomSheetResult(
                 verticalArrangement = Arrangement.Center,
                 modifier = modifier.padding(16.dp)
             ) {
-/*                Text(
-                    "Loading ....", style = MaterialTheme.typography.bodyLarge.copy(
-                        fontSize = 18.sp,
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    "Fun fact: Laughter is a workout! A hearty laugh engages core muscles and boosts endorphin levels,",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        textAlign = TextAlign.Center
-                    )
-                )
-                Button(onClick = {
-                    imageCropLauncher.launch(cropOptions)
-                }) {
-                    Text(text = "Crop!")
-                }
-                Spacer(modifier = Modifier.height(12.dp))*/
                 Text(text = "Masukan Nama Makanan")
                 Spacer(
                     modifier = modifier
@@ -253,12 +219,24 @@ fun BottomSheetResult(
                     onValueChange = onItemName
                 )
                 Spacer(modifier = modifier.height(MaterialTheme.dimens.small2))
-                ButtonPrimary(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .height(MaterialTheme.dimens.buttonHeight),
-                )
+                Row(
+                    modifier = modifier.fillMaxWidth()
+                ) {
+                    ButtonPrimary(
+                        modifier = modifier
+                            .height(MaterialTheme.dimens.buttonHeight),
+                        title = "NEXT",
+                    ) {
 
+                    }
+                    Spacer(modifier = modifier.width(8.dp))
+                    ButtonPrimary(
+                        modifier = modifier
+                            .height(MaterialTheme.dimens.buttonHeight),
+                        title = "CROP",
+                        onAction = onCropAction
+                    )
+                }
             }
         }) { padding ->
         Column(
@@ -272,16 +250,6 @@ fun BottomSheetResult(
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-/*                    IconButton(onClick = {
-                        imageBitmap.value = null
-                        imageUri = null
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Open Gallery",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }*/
                 }
             }
 
@@ -290,15 +258,6 @@ fun BottomSheetResult(
                     .fillMaxSize()
                     .weight(1f)
             ) {
-/*                imageBitmap.value?.let { bitmap ->
-                    Image(
-                        bitmap = bitmap.asImageBitmap(),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black)
-                    )
-                }*/
                 imageUri?.let {
                     if (Build.VERSION.SDK_INT < 28) {
                         imageBitmap.value = MediaStore.Images
@@ -321,22 +280,6 @@ fun BottomSheetResult(
                         )
                     }
                 }
-                /*                IconButton(
-                                    onClick = {
-                                        scope.launch {
-                                            scaffoldState.bottomSheetState.expand()
-                                        }
-                                    },
-                                    modifier = Modifier
-                                        .align(Alignment.BottomCenter)
-                                        .padding(bottom = 16.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.KeyboardArrowUp,
-                                        contentDescription = "Open Gallery",
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                }*/
             }
         }
 
@@ -350,11 +293,7 @@ fun CameraXExecutors(
     controller: LifecycleCameraController,
     launcher: ManagedActivityResultLauncher<String, Uri?>,
     context: Context,
-    scope: CoroutineScope,
-    scaffoldState: BottomSheetScaffoldState,
     saveToUri: (Uri?) -> Unit,
-    imageCropLauncher: ManagedActivityResultLauncher<CropImageContractOptions, CropImageView.CropResult>,
-    cropOptions: CropImageContractOptions,
 ) {
     Column {
         Box(

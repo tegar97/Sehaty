@@ -21,11 +21,19 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import android.Manifest
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import com.miftah.sehaty.ui.screens.navGraph.NavGraph
+import com.miftah.sehaty.ui.screens.navGraph.Route
 import com.miftah.sehaty.utils.CameraPermissionTextProvider
 import com.miftah.sehaty.utils.PermissionDialog
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,12 +76,24 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                /*Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     cameraPermissionResultLauncher.launch(
                         Manifest.permission.CAMERA
                     )
                     if (viewModel.isPermissionAcquire.value) {
                         ScanScreen()
+                    }
+                }*/
+                Box(modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
+                    .fillMaxSize()) {
+                    SideEffect {
+                        cameraPermissionResultLauncher.launch(
+                            Manifest.permission.CAMERA
+                        )
+                    }
+                    if (viewModel.isPermissionAcquire.value) {
+                        NavGraph(startDestination = Route.AppStartNavigation.route)
                     }
                 }
             }
