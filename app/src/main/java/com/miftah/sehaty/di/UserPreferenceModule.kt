@@ -1,6 +1,6 @@
 package com.miftah.sehaty.di
 
-import com.miftah.sehaty.data.preference.UserPreferenceImpl
+import com.miftah.sehaty.core.data.preference.UserPreferenceImpl
 import com.miftah.sehaty.domain.preference.UserPreference
 import dagger.Binds
 import dagger.Module

@@ -1,6 +1,6 @@
 package com.miftah.sehaty.di
 
-import com.miftah.sehaty.data.repository.AppRepositoryImpl
+import com.miftah.sehaty.core.repository.AppRepositoryImpl
 import com.miftah.sehaty.domain.repository.AppRepository
 import dagger.Binds
 import dagger.Module

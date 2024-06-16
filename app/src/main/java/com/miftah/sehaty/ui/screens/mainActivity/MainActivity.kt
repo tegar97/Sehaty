@@ -23,10 +23,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import android.Manifest
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
+import com.miftah.sehaty.ui.screens.common.ChipAndWarning
+import com.miftah.sehaty.ui.screens.detail.DetailScreen
 import com.miftah.sehaty.ui.screens.navGraph.NavGraph
 import com.miftah.sehaty.ui.screens.navGraph.Route
 import com.miftah.sehaty.utils.CameraPermissionTextProvider
@@ -76,17 +81,11 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                /*Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    cameraPermissionResultLauncher.launch(
-                        Manifest.permission.CAMERA
-                    )
-                    if (viewModel.isPermissionAcquire.value) {
-                        ScanScreen()
-                    }
-                }*/
-                Box(modifier = Modifier
-                    .background(MaterialTheme.colorScheme.background)
-                    .fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.background)
+                        .fillMaxSize()
+                ) {
                     SideEffect {
                         cameraPermissionResultLauncher.launch(
                             Manifest.permission.CAMERA

@@ -1,12 +1,12 @@
 package com.miftah.sehaty.domain.preference
 
-import com.miftah.sehaty.data.preference.model.UserModel
 import kotlinx.coroutines.flow.Flow
 
 interface UserPreference {
-    suspend fun saveSession(user: UserModel)
+    suspend fun saveJwt(jwt: String)
 
-    fun getSession(): Flow<UserModel>
+    fun getJwt(): Flow<String?>
 
-    suspend fun logout()
+    fun readAppEntry(): Flow<Boolean>
+
 }

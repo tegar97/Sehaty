@@ -1,12 +1,5 @@
 package com.miftah.sehaty.ui.screens.navigator
 
-import android.Manifest
-import android.app.Activity
-import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DocumentScanner
@@ -14,7 +7,6 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -22,27 +14,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.miftah.sehaty.ui.screens.history.HistoryScreen
-import com.miftah.sehaty.ui.screens.mainActivity.MainActivity
-import com.miftah.sehaty.ui.screens.mainActivity.MainViewModel
-import com.miftah.sehaty.ui.screens.mainActivity.openAppSettings
 import com.miftah.sehaty.ui.screens.navGraph.Route
 import com.miftah.sehaty.ui.screens.navigator.navigators.BottomNavigationItem
 import com.miftah.sehaty.ui.screens.navigator.navigators.MainBottomBar
 import com.miftah.sehaty.ui.screens.scan.ScanScreen
 import com.miftah.sehaty.ui.screens.scan.ScanViewModel
-import com.miftah.sehaty.utils.CameraPermissionTextProvider
-import com.miftah.sehaty.utils.PermissionDialog
 
 @Composable
 fun MainNavigator(
@@ -107,7 +90,8 @@ fun MainNavigator(
                     },
                     onSearch = {
 
-                    }
+                    },
+                    historyScanned = listOf()
                 )
             }
 

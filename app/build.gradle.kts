@@ -69,11 +69,16 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
 
+    implementation(libs.androidx.constraintlayout.compose)
+
     implementation(libs.androidx.material3)
 
     implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.androidx.room)
+    implementation(libs.androidx.room.compiler)
+    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.androidx.room.paging)
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.dagger.hilt)

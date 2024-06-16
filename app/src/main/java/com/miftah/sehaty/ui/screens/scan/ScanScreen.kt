@@ -54,7 +54,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -95,7 +97,7 @@ import java.io.File
 fun ScanScreen(modifier: Modifier = Modifier) {
     var currentProgress by remember { mutableStateOf(0f) }
 
-    var itemName by remember { mutableStateOf("") }
+    val itemName by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val scaffoldState = rememberBottomSheetScaffoldState()
@@ -224,15 +226,14 @@ fun BottomSheetResult(
                 ) {
                     ButtonPrimary(
                         modifier = modifier
-                            .height(MaterialTheme.dimens.buttonHeight),
+                            .height(MaterialTheme.dimens.buttonHeight).weight(1f),
                         title = "NEXT",
                     ) {
-
                     }
                     Spacer(modifier = modifier.width(8.dp))
                     ButtonPrimary(
                         modifier = modifier
-                            .height(MaterialTheme.dimens.buttonHeight),
+                            .height(MaterialTheme.dimens.buttonHeight).weight(1f),
                         title = "CROP",
                         onAction = onCropAction
                     )
@@ -286,7 +287,6 @@ fun BottomSheetResult(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CameraXExecutors(
     modifier: Modifier = Modifier,
@@ -382,11 +382,30 @@ private fun takePhoto(
     )
 }
 
-@Preview
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
 @Composable
 private fun PreviewScanScreen() {
+    val itemName by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val scaffoldState = rememberBottomSheetScaffoldState()
+    val imageBitmap = remember { mutableStateOf<Bitmap?>(null) }
+    val imageUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    LaunchedEffect(true)  {
+        scaffoldState.bottomSheetState.expand()
+    }
     SehatyTheme {
-        ScanScreen()
+        BottomSheetResult(
+            onCropAction = {},
+            onItemName = {},
+            context = context,
+            scaffoldState = scaffoldState,
+            imageBitmap = imageBitmap,
+            imageUri = imageUri,
+            itemName = itemName
+        )
     }
 }
 

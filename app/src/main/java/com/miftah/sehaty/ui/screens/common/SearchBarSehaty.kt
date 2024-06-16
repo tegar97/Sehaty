@@ -25,7 +25,7 @@ import com.miftah.sehaty.ui.theme.SehatyTheme
 @Composable
 fun MainSearchBar(
     modifier: Modifier = Modifier,
-    activity: Boolean,
+    isActive: Boolean,
     query: String,
     onSearch: ((String) -> Unit),
     onQueryChange: ((String) -> Unit),
@@ -36,20 +36,16 @@ fun MainSearchBar(
         query = query,
         onQueryChange = onQueryChange,
         onSearch = onSearch,
-        active = activity,
+        active = isActive,
         onActiveChange = {
 
         },
         leadingIcon = {
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Default.FilterList, contentDescription = null)
-            }
-        },
-        trailingIcon = {
+
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(imageVector = Icons.Default.Search, contentDescription = null)
             }
-        }
+        },
     ) {
 
     }
@@ -60,15 +56,8 @@ fun MainSearchBar(
 private fun MainSearchBarPreview() {
     var query by remember { mutableStateOf("") }
     SehatyTheme {
-        /*MainSearchBar(
-            activity = false,
-            query = query,
-            onQueryChange = {
-                query = it
-            },
-            onSearch = {}
-        ) {
+        MainSearchBar(isActive = false, query = "", onSearch = {}) {
 
-        }*/
+        }
     }
 }

@@ -22,5 +22,5 @@ val MediumDimens = Dimens(
     medium1 = 24.dp,
     medium2 = 32.dp,
     medium3 = 48.dp,
-    large = 64.dp
+    large = 64.dp,
 )
