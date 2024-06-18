@@ -1,6 +1,7 @@
 package com.miftah.sehaty.core.data.remote.retrofit
 
 import com.miftah.sehaty.core.data.remote.dto.request.NutritionRequest
+import com.miftah.sehaty.core.data.remote.dto.request.SignKeyRequest
 import com.miftah.sehaty.core.data.remote.dto.response.CheckResponse
 import com.miftah.sehaty.core.data.remote.dto.response.FoodSaveResponse
 import com.miftah.sehaty.core.data.remote.dto.response.GenerateResponse
@@ -19,7 +20,7 @@ interface ApiService {
     suspend fun scanNutrition(@Part image: MultipartBody.Part): ScanNutritionResponse
 
     @POST("api/whatsapp/generate-code")
-    suspend fun generateJWT(@Body signKey: String): GenerateResponse
+    suspend fun generateJWT(@Body signKeyRequest: SignKeyRequest): GenerateResponse
 
     @GET("api/whatsapp/check-session")
     suspend fun checkSession(): CheckResponse

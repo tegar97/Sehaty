@@ -1,6 +1,7 @@
 package com.miftah.sehaty.core.data.remote.retrofit
 
 import com.miftah.sehaty.core.data.remote.dto.request.NutritionRequest
+import com.miftah.sehaty.core.data.remote.dto.request.SignKeyRequest
 import com.miftah.sehaty.core.data.remote.dto.response.CheckResponse
 import com.miftah.sehaty.core.data.remote.dto.response.FoodSaveResponse
 import com.miftah.sehaty.core.data.remote.dto.response.GenerateResponse
@@ -16,8 +17,8 @@ class ApiServiceImpl @Inject constructor(
     override suspend fun scanNutrition(image: MultipartBody.Part): ScanNutritionResponse =
         apiService.scanNutrition(image)
 
-    override suspend fun generateJWT(signKey: String): GenerateResponse =
-        apiService.generateJWT(signKey)
+    override suspend fun generateJWT(signKeyRequest: SignKeyRequest): GenerateResponse =
+        apiService.generateJWT(signKeyRequest)
 
     override suspend fun checkSession(): CheckResponse =
         apiService.checkSession()

@@ -54,7 +54,8 @@ fun MainBottomBar(
 ) {
     BottomAppBar(
         modifier = modifier
-            .clip(RoundedCornerShape(30.dp)),
+            .clip(RoundedCornerShape(30)),
+        containerColor = Color.Red
     ) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
@@ -105,6 +106,7 @@ private fun MainBottomBarPrev() {
             modifier = Modifier.background(Color.Gray),
             bottomBar = {
                 MainBottomBar(
+                    modifier = Modifier.padding(8.dp),
                     items = items,
                     onSelectedChange = {
                         selectedItem = it

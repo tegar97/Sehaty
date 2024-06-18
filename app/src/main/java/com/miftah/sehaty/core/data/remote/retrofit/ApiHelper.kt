@@ -1,6 +1,7 @@
 package com.miftah.sehaty.core.data.remote.retrofit
 
 import com.miftah.sehaty.core.data.remote.dto.request.NutritionRequest
+import com.miftah.sehaty.core.data.remote.dto.request.SignKeyRequest
 import com.miftah.sehaty.core.data.remote.dto.response.CheckResponse
 import com.miftah.sehaty.core.data.remote.dto.response.FoodSaveResponse
 import com.miftah.sehaty.core.data.remote.dto.response.GenerateResponse
@@ -13,7 +14,7 @@ interface ApiHelper {
 
     suspend fun scanNutrition(image: MultipartBody.Part): ScanNutritionResponse
 
-    suspend fun generateJWT(signKey: String): GenerateResponse
+    suspend fun generateJWT(signKeyRequest: SignKeyRequest): GenerateResponse
 
     suspend fun checkSession(): CheckResponse
 

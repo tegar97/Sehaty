@@ -1,6 +1,7 @@
 package com.miftah.sehaty.ui.screens.setting
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +23,8 @@ import com.miftah.sehaty.ui.theme.dimens
 @Composable
 fun SettingScreen(
     modifier: Modifier = Modifier,
-    itemSettings: List<SettingData>
+    itemSettings: List<SettingData>,
+    clickable: () -> Unit,
 ) {
     LazyColumn(
         modifier = modifier
@@ -43,7 +45,7 @@ fun SettingScreen(
         }
         items(itemSettings) {
             SettingItem(
-                modifier = Modifier,
+                modifier = Modifier.clickable(onClick = clickable),
                 titleSetting = it.title,
                 description = it.description,
                 drawable = it.drawable
@@ -70,6 +72,8 @@ private fun SettingScreenPreview() {
                     drawable = R.drawable.whatsapp_ic
                 )
             )
-        )
+        ) {
+
+        }
     }
 }

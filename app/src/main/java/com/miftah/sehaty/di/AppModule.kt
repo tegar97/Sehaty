@@ -44,12 +44,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLogging(): HttpLoggingInterceptor =
-        if (BuildConfig.DEBUG) {
-            HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-        } else {
-            HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.NONE)
-        }
+    fun provideLogging(): HttpLoggingInterceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
 
     @Provides
     @Singleton

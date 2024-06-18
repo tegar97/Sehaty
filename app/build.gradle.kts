@@ -76,9 +76,11 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
 
     implementation(libs.androidx.room)
-    implementation(libs.androidx.room.compiler)
+//    implementation(libs.androidx.room.compiler)
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.room.paging)
+    implementation(libs.androidx.paging.compose)
+//    annotationProcessor(libs.androidx.room.compiler)
     ksp(libs.androidx.room.compiler)
 
     implementation(libs.dagger.hilt)

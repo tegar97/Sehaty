@@ -1,11 +1,13 @@
 package com.miftah.sehaty.core.data.local.room
 
 import androidx.paging.PagingSource
+import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.miftah.sehaty.core.data.local.entity.HistoryScannedEntity
 
+@Dao
 interface HistoryScannedDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertHistoryScanned(movie: List<HistoryScannedEntity>)

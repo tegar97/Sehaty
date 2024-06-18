@@ -1,11 +1,14 @@
 package com.miftah.sehaty.ui.screens.navigator
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -14,18 +17,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.miftah.sehaty.R
 import com.miftah.sehaty.ui.screens.history.HistoryScreen
 import com.miftah.sehaty.ui.screens.navGraph.Route
 import com.miftah.sehaty.ui.screens.navigator.navigators.BottomNavigationItem
 import com.miftah.sehaty.ui.screens.navigator.navigators.MainBottomBar
 import com.miftah.sehaty.ui.screens.scan.ScanScreen
 import com.miftah.sehaty.ui.screens.scan.ScanViewModel
+import com.miftah.sehaty.ui.screens.setting.SettingData
+import com.miftah.sehaty.ui.screens.setting.SettingScreen
+import com.miftah.sehaty.utils.Constant.ITEM_ID
 
 @Composable
 fun MainNavigator(
@@ -38,7 +46,7 @@ fun MainNavigator(
     val items = listOf(
         BottomNavigationItem(Icons.Default.History, "Scan History"),
         BottomNavigationItem(Icons.Default.DocumentScanner, "Scan"),
-        BottomNavigationItem(Icons.Default.Favorite, "Favorite"),
+        BottomNavigationItem(Icons.Default.Settings, "Setting"),
     )
     var selectedItem by remember { mutableIntStateOf(0) }
 
@@ -56,6 +64,7 @@ fun MainNavigator(
         bottomBar = {
             if (isBottomBarVisible) {
                 MainBottomBar(
+                    modifier = Modifier.padding(8.dp),
                     items = items,
                     onSelectedChange = {
                         selectedItem = it
@@ -75,39 +84,51 @@ fun MainNavigator(
         val bottomPadding = innerPadding.calculateBottomPadding()
         val topPadding = innerPadding.calculateTopPadding()
 
-        NavHost(
-            navController = navController,
-            startDestination = startDestination.route,
+        Surface(
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(route = Route.HistoryScreen.route) {
-                var query by remember { mutableStateOf("") }
-                HistoryScreen(
-                    titleScreen = "Scan History",
-                    query = query,
-                    onQueryChange = {
-                        query = it
-                    },
-                    onSearch = {
+            NavHost(
+                navController = navController,
+                startDestination = startDestination.route,
+            ) {
+                composable(route = Route.HistoryScreen.route) {
+                    /*var query by remember { mutableStateOf("") }
+                    HistoryScreen(
+                        query = query,
+                        onQueryChange = {
+                            query = it
+                        },
+                        onSearch = {
 
-                    },
-                    historyScanned = listOf()
-                )
-            }
+                        },
+                        historyScanned = listOf()
+                    )*/
+                }
 
-            composable(route = Route.ScanScreen.route) {
-                val viewModel: ScanViewModel = hiltViewModel()
+                composable(route = Route.ScanScreen.route) {
+                    val viewModel: ScanViewModel = hiltViewModel()
 
-                ScanScreen()
+//                ScanScreen()
 
-            }
-            composable(route = Route.SettingScreen.route) {
+                }
+                composable(route = Route.SettingScreen.route) {
+                    /*SettingScreen(
+                        itemSettings = listOf(
+                            SettingData(
+                                title = "WhatsApp",
+                                description = "Connect to WhatsApp",
+                                drawable = R.drawable.whatsapp_ic
+                            )
+                        )
+                    ) {
 
-            }
-            composable(route = Route.DetailScreen.route) {
+                    }*/
+                }
+                composable(route = Route.DetailScreen.route) {
+                    val itemId = it.arguments?.getInt(ITEM_ID)
 
+                }
             }
         }
-
     }
 }

@@ -21,6 +21,7 @@ import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import android.Manifest
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.rememberScrollState
@@ -40,6 +41,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,19 +84,20 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                Box(
+                /*Box(
                     modifier = Modifier
                         .background(MaterialTheme.colorScheme.background)
                         .fillMaxSize()
                 ) {
-                    SideEffect {
-                        cameraPermissionResultLauncher.launch(
-                            Manifest.permission.CAMERA
-                        )
-                    }
-                    if (viewModel.isPermissionAcquire.value) {
-                        NavGraph(startDestination = Route.AppStartNavigation.route)
-                    }
+
+                }*/
+                SideEffect {
+                    cameraPermissionResultLauncher.launch(
+                        Manifest.permission.CAMERA
+                    )
+                }
+                if (viewModel.isPermissionAcquire.value) {
+                    NavGraph(startDestination = viewModel.currentDestination.value)
                 }
             }
         }

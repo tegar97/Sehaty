@@ -6,7 +6,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.miftah.sehaty.core.data.local.entity.HistoryScannedEntity
 import com.miftah.sehaty.core.data.local.room.AppDatabase
-import com.miftah.sehaty.core.data.local.room.HistoryScannedDao
+import com.miftah.sehaty.core.data.remote.dto.request.SignKeyRequest
 import com.miftah.sehaty.core.data.remote.retrofit.ApiService
 import com.miftah.sehaty.core.remote_mediator.HistoryScannedRemoteMediator
 import com.miftah.sehaty.domain.model.FoodAfterScan
@@ -62,11 +62,11 @@ class AppRepositoryImpl @Inject constructor(
     override fun getJWT(signKey: String): Flow<UiState<String>> = flow {
         emit(UiState.Loading)
         try {
-            val result = apiService.generateJWT(signKey)
+            val result = apiService.generateJWT(SignKeyRequest(signKey))
             if (result.accessCode == null) {
                 emit(UiState.Error(result.message))
             } else {
-                emit(UiState.Success("scc"))
+                emit(UiState.Success(result.accessCode))
             }
         } catch (e: HttpException) {
             emit(UiState.Error(e.message.toString()))
