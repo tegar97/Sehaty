@@ -1,6 +1,7 @@
 [versions]
 agp = "8.4.1"
 coilCompose = "2.6.0"
+composeMaterial3Pullrefresh = "1.1.1"
 constraintlayoutCompose = "1.0.1"
 datastorePreferences = "1.1.1"
 hiltNavigationCompose = "1.2.0"
@@ -13,7 +14,7 @@ junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 lifecycleRuntimeKtx = "2.8.1"
 activityCompose = "1.9.0"
-composeBom = "2024.05.00"
+composeBom = "2024.06.00"
 daggerHilt = "2.51.1"
 pagingRuntimeKtx = "3.3.0"
 room = "2.6.1"
@@ -26,6 +27,7 @@ cropper = "4.5.0"
 
 [libraries]
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingRuntimeKtx" }
+compose-material3-pullrefresh = { module = "eu.bambooapps:compose-material3-pullrefresh", version.ref = "composeMaterial3Pullrefresh" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }

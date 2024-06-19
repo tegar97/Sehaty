@@ -1,8 +1,13 @@
 package com.miftah.sehaty.domain.model
 
+import android.os.Parcelable
 import com.miftah.sehaty.core.data.remote.dto.response.ScanNutritionResponse
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class FoodAfterScan(
+    val productName: String? = null,
+    val productPhoto: String,
     val grade: String,
     val nutriScore: Int,
     val warnings: List<String>,
@@ -23,9 +28,9 @@ data class FoodAfterScan(
     val sugars100g: Int,
     val totalCarbs100g: Int,
     val totalFat100g: Int
-)
+) : Parcelable
 
-fun ScanNutritionResponse.convertToFoodAfterScan() : FoodAfterScan {
+fun ScanNutritionResponse.convertToFoodAfterScan(): FoodAfterScan {
     this.data!!.let {
         return FoodAfterScan(
             warnings = it.warnings,
@@ -47,8 +52,8 @@ fun ScanNutritionResponse.convertToFoodAfterScan() : FoodAfterScan {
             sodium100g = it.portion100g.sodium,
             sugars100g = it.portion100g.sugars,
             protein100g = it.portion100g.protein,
-            portionSize100g = it.portion100g.portionSize
+            portionSize100g = it.portion100g.portionSize,
+            productPhoto = it.productPhoto
         )
     }
 }
-

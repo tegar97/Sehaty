@@ -56,7 +56,10 @@ data class DataScanNutritionResponse(
 	val portion100g: Portion100gNutritionResponse,
 
     @field:SerializedName("nutriScore")
-	val nutriScore: Int
+	val nutriScore: Int,
+
+	@field:SerializedName("productPhoto")
+	val productPhoto: String,
 )
 
 data class NutritionScanResponse(

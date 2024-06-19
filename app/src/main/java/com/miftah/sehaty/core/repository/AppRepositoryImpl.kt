@@ -36,7 +36,7 @@ class AppRepositoryImpl @Inject constructor(
             emit(UiState.Loading)
             try {
                 val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-                val photoPart = MultipartBody.Part.createFormData("photo", file.name, requestFile)
+                val photoPart = MultipartBody.Part.createFormData("image", file.name, requestFile)
                 val result = apiService.scanNutrition(photoPart)
                 if (result.error != null) {
                     emit(UiState.Error(result.message))

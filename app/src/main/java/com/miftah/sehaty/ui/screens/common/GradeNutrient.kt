@@ -23,14 +23,15 @@ fun GradeNutrient(
     percentage: Float,
     indicatorSize: Int,
     strokeWidth: Int,
-    indicatorColor: Color
+    indicatorColor: Color,
+    score: String
 ) {
     Box(
         modifier = modifier,
         contentAlignment = Alignment.Center,
     ) {
         Text(
-            text = "A",
+            text = score,
             style = MaterialTheme.typography.titleLarge.copy(
                 fontSize = fontSize.sp,
                 color = indicatorColor
@@ -50,7 +51,7 @@ fun GradeNutrient(
 @Preview
 @Composable
 private fun GradeNutrientPreview() {
-    SehatyTheme {
+    /*SehatyTheme {
         GradeNutrient(
             fontSize = 25,
             indicatorSize = 50,
@@ -58,5 +59,5 @@ private fun GradeNutrientPreview() {
             strokeWidth = 5,
             indicatorColor = Color.Red
         )
-    }
+    }*/
 }

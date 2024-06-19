@@ -41,6 +41,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
@@ -57,6 +58,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -81,9 +83,11 @@ import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
+import com.miftah.sehaty.domain.model.FoodAfterScan
 import com.miftah.sehaty.ui.screens.common.ButtonPrimary
 import com.miftah.sehaty.ui.theme.SehatyTheme
 import com.miftah.sehaty.ui.theme.dimens
+import com.miftah.sehaty.utils.UiState
 import com.miftah.sehaty.utils.reduceFileImage
 import com.miftah.sehaty.utils.reduceFileImageCompat
 import com.miftah.sehaty.utils.saveBitmapToFile
@@ -94,18 +98,24 @@ import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScanScreen(modifier: Modifier = Modifier) {
-    var currentProgress by remember { mutableStateOf(0f) }
+fun ScanScreen(
+    modifier: Modifier = Modifier,
+    onEvent: (ScanEvent) -> Unit,
+    state: ScanState,
+    navigateToDetail: (FoodAfterScan) -> Unit
+) {
+//    var currentProgress by remember { mutableStateOf(0f) }
 
-    val itemName by remember { mutableStateOf("") }
+//    val itemName by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val scaffoldState = rememberBottomSheetScaffoldState()
-    val imageBitmap = remember { mutableStateOf<Bitmap?>(null) }
+
+    /*val imageBitmap = remember { mutableStateOf<Bitmap?>(null) }
     var imageUri by remember {
         mutableStateOf<Uri?>(null)
-    }
-    val saveToUri: (Uri?) -> Unit = { uri: Uri? ->
+    }*/
+    /*val saveToUri: (Uri?) -> Unit = { uri: Uri? ->
         imageUri = uri
         if (uri != null) {
             val imageFile = uriToFile(uri, context)
@@ -120,11 +130,24 @@ fun ScanScreen(modifier: Modifier = Modifier) {
                 scaffoldState.bottomSheetState.expand()
             }
         }
-    }
+    }*/
+    onEvent(ScanEvent.SetContextWeakReference(context))
+
+    /*val isOpenOrNot by remember {
+        derivedStateOf {
+            state.imageUri == null
+        }
+    }*/
+
     val launcher = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.GetContent(),
-        onResult = saveToUri
+        onResult = {
+            onEvent(ScanEvent.SaveToUri(it))
+            scope.launch {
+                scaffoldState.bottomSheetState.expand()
+            }
+        }
     )
     val controller = remember {
         LifecycleCameraController(context).apply {
@@ -138,7 +161,8 @@ fun ScanScreen(modifier: Modifier = Modifier) {
     val imageCropLauncher =
         rememberLauncherForActivityResult(contract = CropImageContract()) { result ->
             if (result.isSuccessful) {
-                saveToUri(result.uriContent)
+                onEvent(ScanEvent.SaveToUri(result.uriContent))
+//                saveToUri(result.uriContent)
                 scope.launch {
                     scaffoldState.bottomSheetState.expand()
                 }
@@ -148,9 +172,9 @@ fun ScanScreen(modifier: Modifier = Modifier) {
         }
 
     val cropOptions =
-        CropImageContractOptions(imageUri, CropImageOptions(imageSourceIncludeCamera = true))
+        CropImageContractOptions(state.imageUri, CropImageOptions(imageSourceIncludeCamera = true))
 
-    if (imageBitmap.value != null || imageUri != null) {
+    /*if (imageBitmap.value != null || imageUri != null) {
         BottomSheetResult(
             modifier,
             scaffoldState,
@@ -171,6 +195,27 @@ fun ScanScreen(modifier: Modifier = Modifier) {
             context,
             saveToUri,
         )
+    }*/
+
+    if (state.imageUri != null) {
+        BottomSheetToShowResult(
+            state = state,
+            onEvent = onEvent,
+            scaffoldState = scaffoldState,
+            navigateToDetail = navigateToDetail,
+            onCropAction = {
+                imageCropLauncher.launch(cropOptions)
+            }
+        )
+    } else {
+        ExecuteCameraXOrOpenGallery(
+            onEvent = onEvent,
+            context = context,
+            controller = controller,
+            scaffoldState = scaffoldState,
+            scope = scope,
+            launcher = launcher
+        )
     }
 }
 
@@ -187,7 +232,7 @@ fun hasRequiredPermissions(context: Context): Boolean {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+/*@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetResult(
     modifier: Modifier = Modifier,
@@ -226,14 +271,16 @@ fun BottomSheetResult(
                 ) {
                     ButtonPrimary(
                         modifier = modifier
-                            .height(MaterialTheme.dimens.buttonHeight).weight(1f),
+                            .height(MaterialTheme.dimens.buttonHeight)
+                            .weight(1f),
                         title = "NEXT",
                     ) {
                     }
                     Spacer(modifier = modifier.width(8.dp))
                     ButtonPrimary(
                         modifier = modifier
-                            .height(MaterialTheme.dimens.buttonHeight).weight(1f),
+                            .height(MaterialTheme.dimens.buttonHeight)
+                            .weight(1f),
                         title = "CROP",
                         onAction = onCropAction
                     )
@@ -280,20 +327,136 @@ fun BottomSheetResult(
                             contentScale = ContentScale.Crop
                         )
                     }
+
+
                 }
             }
         }
 
     }
+}*/
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BottomSheetToShowResult(
+    modifier: Modifier = Modifier,
+    scaffoldState: BottomSheetScaffoldState,
+    onEvent: (ScanEvent) -> Unit,
+    onCropAction: (() -> Unit),
+    state: ScanState,
+    navigateToDetail: (FoodAfterScan) -> Unit
+) {
+    BottomSheetScaffold(
+        modifier = modifier.windowInsetsPadding(WindowInsets.ime),
+        sheetSwipeEnabled = false,
+        scaffoldState = scaffoldState,
+        sheetPeekHeight = 0.dp,
+        sheetContent = {
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = modifier.padding(16.dp)
+            ) {
+                Text(text = "Masukan Nama Makanan")
+                Spacer(
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .height(MaterialTheme.dimens.small2)
+                )
+                OutlinedTextField(
+                    modifier = modifier.fillMaxWidth(),
+                    value = state.imageTitle,
+                    onValueChange = {
+                        onEvent(ScanEvent.WriteItemTitle(it))
+                    },
+                    maxLines = 1,
+                    singleLine = true,
+                )
+                Spacer(modifier = modifier.height(MaterialTheme.dimens.small2))
+                Row(
+                    modifier = modifier.fillMaxWidth()
+                ) {
+                    ButtonPrimary(
+                        modifier = modifier
+                            .height(MaterialTheme.dimens.buttonHeight)
+                            .weight(1f),
+                        title = "NEXT",
+                    ) {
+                        onEvent(ScanEvent.ScanImage)
+                    }
+                    Spacer(modifier = modifier.width(8.dp))
+                    ButtonPrimary(
+                        modifier = modifier
+                            .height(MaterialTheme.dimens.buttonHeight)
+                            .weight(1f),
+                        title = "CROP",
+                        onAction = onCropAction
+                    )
+                }
+                state.scanImageResult?.collectAsState(initial = null)?.value.let { result ->
+                    when (result) {
+                        is UiState.Error -> {
+                            AlertDialog(
+                                onDismissRequest = { },
+                                confirmButton = { },
+                                title = { Text(text = "Err") },
+                                text = { Text(text = result.error) }
+                            )
+                        }
+
+                        UiState.Loading -> {
+                            LinearProgressIndicator(
+                                modifier = Modifier.fillMaxWidth(),
+                                color = MaterialTheme.colorScheme.secondary,
+                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            )
+                        }
+
+                        is UiState.Success -> {
+                            navigateToDetail(result.data.copy(
+                                productName = state.imageTitle
+                            ))
+                        }
+                        null -> {}
+                    }
+                }
+            }
+        }) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            Box(
+                modifier = modifier
+                    .fillMaxSize()
+                    .weight(1f)
+            ) {
+                state.imageBitmap?.let {
+                    Image(
+                        bitmap = it.asImageBitmap(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
+        }
+    }
 }
 
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CameraXExecutors(
+fun ExecuteCameraXOrOpenGallery(
     modifier: Modifier = Modifier,
     controller: LifecycleCameraController,
     launcher: ManagedActivityResultLauncher<String, Uri?>,
     context: Context,
-    saveToUri: (Uri?) -> Unit,
+    scope: CoroutineScope,
+    scaffoldState: BottomSheetScaffoldState,
+    onEvent: (ScanEvent) -> Unit
 ) {
     Column {
         Box(
@@ -323,8 +486,10 @@ fun CameraXExecutors(
                             controller = controller,
                             context = context,
                             onPhotoTaken = { bitmap ->
-                                val savedUri = saveBitmapToFile(context, bitmap)
-                                saveToUri(savedUri)
+                                onEvent(ScanEvent.SaveToUri(saveBitmapToFile(context, bitmap)))
+                                scope.launch {
+                                    scaffoldState.bottomSheetState.expand()
+                                }
                             }
                         )
                     }) {
@@ -344,6 +509,7 @@ fun CameraXExecutors(
     }
 }
 
+
 private fun takePhoto(
     controller: LifecycleCameraController,
     context: Context,
@@ -360,7 +526,7 @@ private fun takePhoto(
 
                 val matrix = Matrix().apply {
                     postRotate(image.imageInfo.rotationDegrees.toFloat())
-                    postScale(-1f, 1f)
+                    postScale(1f, 1f)
                 }
                 val rotatedBitMap = Bitmap.createBitmap(
                     image.toBitmap(),
@@ -386,25 +552,17 @@ private fun takePhoto(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewScanScreen() {
-    val itemName by remember { mutableStateOf("") }
-    val context = LocalContext.current
     val scaffoldState = rememberBottomSheetScaffoldState()
-    val imageBitmap = remember { mutableStateOf<Bitmap?>(null) }
-    val imageUri by remember {
-        mutableStateOf<Uri?>(null)
-    }
-    LaunchedEffect(true)  {
+    LaunchedEffect(true) {
         scaffoldState.bottomSheetState.expand()
     }
     SehatyTheme {
-        BottomSheetResult(
+        BottomSheetToShowResult(
             onCropAction = {},
-            onItemName = {},
-            context = context,
+            navigateToDetail = {},
             scaffoldState = scaffoldState,
-            imageBitmap = imageBitmap,
-            imageUri = imageUri,
-            itemName = itemName
+            state = ScanState(),
+            onEvent = {}
         )
     }
 }

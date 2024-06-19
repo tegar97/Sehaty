@@ -1,7 +1,7 @@
 package com.miftah.sehaty.ui.screens.navGraph
 
 import androidx.navigation.NamedNavArgument
-import com.miftah.sehaty.utils.Constant.ITEM_ID
+import com.miftah.sehaty.utils.Constant.FOOD_AFTER_SCAN
 
 sealed class Route(
     val route: String,
@@ -19,7 +19,7 @@ sealed class Route(
 
     data object SettingScreen : Route(route = "settingScreen")
 
-    data object DetailScreen : Route(route = "detailScreen/{$ITEM_ID}")
+    data object DetailScreen : Route(route = "detailScreen")
 
     data object MainNavigator : Route(route = "mainNavigator")
 }

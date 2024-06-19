@@ -63,7 +63,7 @@ fun MainBottomBar(
                     if (index == 1) {
                         Box(
                             modifier
-                                .size(MaterialTheme.dimens.large)
+                                .size(MaterialTheme.dimens.medium3)
                                 .clip(RoundedCornerShape(15.dp))
                                 .background(MaterialTheme.colorScheme.secondary),
                             contentAlignment = Alignment.Center
@@ -80,7 +80,7 @@ fun MainBottomBar(
                 },
                 selected = selectedItem == index,
                 onClick = {
-                    if (index != 1) onSelectedChange(index)
+                    onSelectedChange(index)
                 }
             )
         }

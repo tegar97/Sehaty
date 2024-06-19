@@ -13,7 +13,8 @@ object Constant {
 
     const val SHARED_PREFERENCES_KEY = "SHARED_PREFERENCES_KEY"
 
-    const val ITEM_ID = "ITEM_ID"
+    const val FOOD_AFTER_SCAN = "FOOD_AFTER_SCAN"
+    const val FOOD_URI = "FOOD_URI"
 
     val JWT_KEY = stringPreferencesKey("jwt")
     val APP_ENTRY = booleanPreferencesKey("AppEntry")

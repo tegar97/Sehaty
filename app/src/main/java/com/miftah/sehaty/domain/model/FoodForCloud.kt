@@ -81,3 +81,34 @@ fun Portion100gFoodForCloud.toPortion100gRequest(): Portion100gRequest =
         totalCarbs = totalCarbs,
         totalFat = totalFat
     )
+
+fun FoodAfterScan.convertFoodAfterScan(name: String, photo: File) : FoodForCloud {
+    return FoodForCloud(
+        name = name,
+        photo = photo,
+        nutrition = NutritionForCloud(
+            dietaryFiber = dietaryFiber,
+            energy = energy,
+            grade = grade,
+            kolestrol = kolestrol,
+            nutriScore = nutriScore,
+            portionSize = portionSize,
+            protein = protein,
+            sodium = sodium,
+            sugars = sugars,
+            totalCarbs = totalCarbs,
+            totalFat = totalFat,
+            warnings = warnings,
+            portion100g = Portion100gFoodForCloud(
+                protein = protein100g,
+                dietaryFiber = dietaryFiber100g,
+                portionSize = portionSize100g,
+                totalCarbs = totalCarbs100g,
+                totalFat = totalFat100g,
+                energy = energy100g,
+                sugars = sugars100g,
+                sodium = sodium100g
+            )
+        ),
+    )
+}

@@ -14,7 +14,7 @@ class HistoryViewModel @Inject constructor(
     private val getAllHistoryScanned: GetAllHistoryScanned
 ) : ViewModel() {
     private var _state = mutableStateOf(SearchState())
-    val state: State<SearchState> = _state
+    val state: State<SearchState> get() = _state
 
     fun onEvent(event: HistoryEvent) {
         when (event) {

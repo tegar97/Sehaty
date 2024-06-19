@@ -16,6 +16,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 
 interface ApiService {
+    @Multipart
     @POST("api/images/upload")
     suspend fun scanNutrition(@Part image: MultipartBody.Part): ScanNutritionResponse
 

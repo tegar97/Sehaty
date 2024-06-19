@@ -25,7 +25,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.miftah.sehaty.R
+import com.miftah.sehaty.domain.model.FoodAfterScan
+import com.miftah.sehaty.ui.screens.detail.DetailEvent
+import com.miftah.sehaty.ui.screens.detail.DetailScreen
+import com.miftah.sehaty.ui.screens.detail.DetailViewModel
 import com.miftah.sehaty.ui.screens.history.HistoryScreen
+import com.miftah.sehaty.ui.screens.history.HistoryViewModel
 import com.miftah.sehaty.ui.screens.navGraph.Route
 import com.miftah.sehaty.ui.screens.navigator.navigators.BottomNavigationItem
 import com.miftah.sehaty.ui.screens.navigator.navigators.MainBottomBar
@@ -33,7 +38,8 @@ import com.miftah.sehaty.ui.screens.scan.ScanScreen
 import com.miftah.sehaty.ui.screens.scan.ScanViewModel
 import com.miftah.sehaty.ui.screens.setting.SettingData
 import com.miftah.sehaty.ui.screens.setting.SettingScreen
-import com.miftah.sehaty.utils.Constant.ITEM_ID
+import com.miftah.sehaty.utils.Constant.FOOD_AFTER_SCAN
+import com.miftah.sehaty.utils.Constant.FOOD_URI
 
 @Composable
 fun MainNavigator(
@@ -92,6 +98,8 @@ fun MainNavigator(
                 startDestination = startDestination.route,
             ) {
                 composable(route = Route.HistoryScreen.route) {
+                    val viewModel: HistoryViewModel = hiltViewModel()
+
                     /*var query by remember { mutableStateOf("") }
                     HistoryScreen(
                         query = query,
@@ -104,15 +112,24 @@ fun MainNavigator(
                         historyScanned = listOf()
                     )*/
                 }
-
                 composable(route = Route.ScanScreen.route) {
                     val viewModel: ScanViewModel = hiltViewModel()
-
-//                ScanScreen()
-
+                    val goToDetail: (FoodAfterScan) -> Unit = {
+//                        navController.navigate("${Route.DetailScreen.route}/${it}")
+                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                            key = FOOD_AFTER_SCAN,
+                            value = it
+                        )
+                        navController.navigate(Route.DetailScreen.route)
+                    }
+                    ScanScreen(
+                        state = viewModel.scanState.value,
+                        onEvent = viewModel::onEvent,
+                        navigateToDetail = goToDetail
+                    )
                 }
                 composable(route = Route.SettingScreen.route) {
-                    /*SettingScreen(
+                    SettingScreen(
                         itemSettings = listOf(
                             SettingData(
                                 title = "WhatsApp",
@@ -121,12 +138,22 @@ fun MainNavigator(
                             )
                         )
                     ) {
-
-                    }*/
+                        // TO WA
+                    }
                 }
                 composable(route = Route.DetailScreen.route) {
-                    val itemId = it.arguments?.getInt(ITEM_ID)
-
+                    val result =
+                        navController.previousBackStackEntry?.savedStateHandle?.get<FoodAfterScan>(
+                            FOOD_AFTER_SCAN
+                        )
+                    val viewModel: DetailViewModel = hiltViewModel()
+                    if (result != null) {
+                        viewModel.setDetailState(result)
+                    }
+                    DetailScreen(
+                        state = viewModel.detailState.value,
+                        onEvent = viewModel::onEvent
+                    )
                 }
             }
         }
