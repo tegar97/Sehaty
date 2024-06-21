@@ -50,6 +50,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.miftah.sehaty.domain.model.convertToHistoryScanned
+import com.miftah.sehaty.ui.theme.Grey30
+import com.miftah.sehaty.ui.theme.Grey50
 import eu.bambooapps.material3.pullrefresh.PullRefreshIndicator
 import eu.bambooapps.material3.pullrefresh.pullRefresh
 import eu.bambooapps.material3.pullrefresh.rememberPullRefreshState
@@ -102,9 +104,16 @@ fun HistoryScreen(
                         text = "Scan History",
                         style = MaterialTheme.typography.titleLarge
                     )
+                    Text(
+                        modifier = Modifier.padding(top = 8.dp),
+                        text = "Kamu bisa save history kamu apabila kamu login dengan WhatsApp",
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            color = Grey50
+                        )
+                    )
                     MainSearchBar(
                         modifier = Modifier
-                            .padding(top = MaterialTheme.dimens.medium1)
+                            .padding(top = MaterialTheme.dimens.small2)
                             .fillMaxWidth()
                             .padding(top = 16.dp),
                         query = state.searchQuery,

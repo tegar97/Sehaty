@@ -112,43 +112,12 @@ fun ScanScreen(
     navigateToDetail: (FoodAfterScan) -> Unit,
     backToHistory: () -> Unit
 ) {
-//    var currentProgress by remember { mutableStateOf(0f) }
-
-//    val itemName by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val scaffoldState = rememberBottomSheetScaffoldState()
     var lensFacing by remember { mutableIntStateOf(CameraSelector.LENS_FACING_BACK) }
 
-    /*val imageBitmap = remember { mutableStateOf<Bitmap?>(null) }
-    var imageUri by remember {
-        mutableStateOf<Uri?>(null)
-    }*/
-    /*val saveToUri: (Uri?) -> Unit = { uri: Uri? ->
-        imageUri = uri
-        if (uri != null) {
-            val imageFile = uriToFile(uri, context)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                imageFile.reduceFileImage()
-                Log.d("URI -> FILE", imageFile.path)
-            } else {
-                val reducedFile = imageFile.reduceFileImageCompat()
-                Log.d("URI -> FILE (Compat)", reducedFile.path)
-            }
-            scope.launch {
-                scaffoldState.bottomSheetState.expand()
-            }
-        }
-    }*/
-
     onEvent(ScanEvent.SetContextWeakReference(context))
-
-    /*val isOpenOrNot by remember {
-        derivedStateOf {
-            state.imageUri == null
-        }
-    }*/
-
     val launcher = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.GetContent(),
@@ -231,109 +200,6 @@ fun hasRequiredPermissions(context: Context): Boolean {
     }
 }
 
-/*@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BottomSheetResult(
-    modifier: Modifier = Modifier,
-    scaffoldState: BottomSheetScaffoldState,
-    imageBitmap: MutableState<Bitmap?>,
-    imageUri: Uri?,
-    context: Context,
-    itemName: String,
-    onCropAction: (() -> Unit),
-    onItemName: ((String) -> Unit)
-) {
-    BottomSheetScaffold(
-        modifier = modifier.windowInsetsPadding(WindowInsets.ime),
-        sheetSwipeEnabled = false,
-        scaffoldState = scaffoldState,
-        sheetPeekHeight = 0.dp,
-        sheetContent = {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                modifier = modifier.padding(16.dp)
-            ) {
-                Text(text = "Masukan Nama Makanan")
-                Spacer(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .height(MaterialTheme.dimens.small2)
-                )
-                OutlinedTextField(
-                    modifier = modifier.fillMaxWidth(),
-                    value = itemName,
-                    onValueChange = onItemName
-                )
-                Spacer(modifier = modifier.height(MaterialTheme.dimens.small2))
-                Row(
-                    modifier = modifier.fillMaxWidth()
-                ) {
-                    ButtonPrimary(
-                        modifier = modifier
-                            .height(MaterialTheme.dimens.buttonHeight)
-                            .weight(1f),
-                        title = "NEXT",
-                    ) {
-                    }
-                    Spacer(modifier = modifier.width(8.dp))
-                    ButtonPrimary(
-                        modifier = modifier
-                            .height(MaterialTheme.dimens.buttonHeight)
-                            .weight(1f),
-                        title = "CROP",
-                        onAction = onCropAction
-                    )
-                }
-            }
-        }) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            imageBitmap.value?.let {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                }
-            }
-
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-                    .weight(1f)
-            ) {
-                imageUri?.let {
-                    if (Build.VERSION.SDK_INT < 28) {
-                        imageBitmap.value = MediaStore.Images
-                            .Media.getBitmap(context.contentResolver, it)
-
-                    } else {
-                        val source = ImageDecoder
-                            .createSource(context.contentResolver, it)
-                        imageBitmap.value = ImageDecoder.decodeBitmap(source)
-                    }
-
-                    imageBitmap.value?.let { bitmap ->
-                        Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(Color.Black),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-
-
-                }
-            }
-        }
-
-    }
-}*/
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
