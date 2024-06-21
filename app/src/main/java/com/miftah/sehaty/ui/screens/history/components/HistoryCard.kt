@@ -53,6 +53,7 @@ import com.miftah.sehaty.ui.screens.common.ChipAndWarning
 import com.miftah.sehaty.ui.screens.common.GradeNutrient
 import com.miftah.sehaty.ui.screens.common.ItemChipWarning
 import com.miftah.sehaty.ui.theme.SehatyTheme
+import com.miftah.sehaty.ui.theme.White30
 import com.miftah.sehaty.ui.theme.dimens
 
 @Composable
@@ -66,6 +67,9 @@ fun HistoryCard(
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 10.dp
+        ),
+        colors = CardDefaults.elevatedCardColors().copy(
+            containerColor = White30
         )
     ) {
         ConstraintLayout(

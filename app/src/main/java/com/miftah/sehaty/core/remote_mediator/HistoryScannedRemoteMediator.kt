@@ -48,13 +48,17 @@ class HistoryScannedRemoteMediator(
         }
 
         try {
-            var responseData = emptyList<HistoryScannedEntity>()
-
-            if (isActive) {
-                responseData = if (search.isNullOrEmpty()) {
+            val responseData: List<HistoryScannedEntity> = if (isActive) {
+                if (search.isNullOrEmpty()) {
                     apiService.getHistory().data.map {
                         it.convertHistoryScannedEntity()
                     }
+                } else {
+                    appDatabase.historyScannedDao().searchItem(search)
+                }
+            } else {
+                if (search.isNullOrEmpty()) {
+                    appDatabase.historyScannedDao().getAllHistoriesScanned()
                 } else {
                     appDatabase.historyScannedDao().searchItem(search)
                 }
@@ -63,7 +67,7 @@ class HistoryScannedRemoteMediator(
             val endOfPaginationReached = responseData.isEmpty()
 
             appDatabase.withTransaction {
-                if (loadType == LoadType.REFRESH && isActive) {
+                if (loadType == LoadType.REFRESH) {
                     appDatabase.remoteKeysDao().deleteRemoteKeys()
                     appDatabase.historyScannedDao().deleteAllHistoryScanned()
                 }
@@ -73,7 +77,7 @@ class HistoryScannedRemoteMediator(
                     RemoteKeysEntity(id = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
                 appDatabase.remoteKeysDao().insertAll(keys)
-                appDatabase.historyScannedDao().insertHistoriesScanned(responseData)
+                if (isActive) appDatabase.historyScannedDao().insertHistoriesScanned(responseData)
             }
             return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (exception: Exception) {
@@ -84,18 +88,18 @@ class HistoryScannedRemoteMediator(
     }
 
     override suspend fun initialize(): InitializeAction {
-        return InitializeAction.LAUNCH_INITIAL_REFRESH
+        return if (isActive) InitializeAction.LAUNCH_INITIAL_REFRESH else InitializeAction.SKIP_INITIAL_REFRESH
     }
 
     private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, HistoryScannedEntity>): RemoteKeysEntity? {
         return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()?.let { data ->
-            data.id?.let { appDatabase.remoteKeysDao().getRemoteKeysId(it) }
+            appDatabase.remoteKeysDao().getRemoteKeysId(data.id)
         }
     }
 
     private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, HistoryScannedEntity>): RemoteKeysEntity? {
         return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()?.let { data ->
-            data.id?.let { appDatabase.remoteKeysDao().getRemoteKeysId(it) }
+            appDatabase.remoteKeysDao().getRemoteKeysId(data.id)
         }
     }
 

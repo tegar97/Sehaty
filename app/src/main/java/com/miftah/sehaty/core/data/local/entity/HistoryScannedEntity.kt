@@ -8,9 +8,9 @@ import com.miftah.sehaty.core.data.remote.dto.response.DataItemHistory
 
 @Entity(tableName = "historyScanItem")
 data class HistoryScannedEntity(
+    @ColumnInfo("id")
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo("idItem")
-    val id: Int? = null,
+    val id: Int = 0,
 
     @ColumnInfo("createdAt")
     val createdAt: String? = null,

@@ -43,6 +43,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshContainer
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -75,12 +76,14 @@ fun HistoryScreen(
     val refreshing = rememberPullRefreshState(
         refreshing = isRefreshing,
         onRefresh = {
-            refreshScope.launch {
-                historyItemsEntity?.refresh()
-                delay(1500)
-            }
+            historyItemsEntity?.refresh()
         }
     )
+
+    LaunchedEffect(state.searchQuery) {
+        event(HistoryEvent.SearchNews)
+    }
+
     if (historyItemsEntity?.itemCount == 0 || historyItemsEntity == null || historyItemsEntity.loadState.hasError) {
         Box(
             modifier = modifier
@@ -100,13 +103,16 @@ fun HistoryScreen(
                         style = MaterialTheme.typography.titleLarge
                     )
                     MainSearchBar(
-                        modifier = Modifier.padding(top = MaterialTheme.dimens.medium1).fillMaxWidth().padding(top = 16.dp),
+                        modifier = Modifier
+                            .padding(top = MaterialTheme.dimens.medium1)
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
                         query = state.searchQuery,
                         onQueryChange = {
                             event(HistoryEvent.UpdateSearchQuery(it))
                         },
                     ){
-
+                        event(HistoryEvent.SearchNews)
                     }
                 }
             }
@@ -154,7 +160,12 @@ fun HistoryScreen(
                         style = MaterialTheme.typography.titleLarge
                     )
                     MainSearchBar(
-                        modifier = Modifier.padding(top = MaterialTheme.dimens.medium1, bottom = MaterialTheme.dimens.small2).fillMaxWidth(),
+                        modifier = Modifier
+                            .padding(
+                                top = MaterialTheme.dimens.medium1,
+                                bottom = MaterialTheme.dimens.small2
+                            )
+                            .fillMaxWidth(),
                         query = state.searchQuery,
                         onQueryChange = {
                             event(HistoryEvent.UpdateSearchQuery(it))
@@ -167,7 +178,8 @@ fun HistoryScreen(
                     historyItemsEntity[it].let { history ->
                         history?.let {
                             HistoryCard(
-                                modifier = Modifier.padding(bottom = 8.dp)
+                                modifier = Modifier
+                                    .padding(bottom = 8.dp)
                                     .clickable {
                                         navigateToDetail(history.convertToHistoryScanned())
                                     },

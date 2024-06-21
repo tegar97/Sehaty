@@ -1,9 +1,11 @@
 package com.miftah.sehaty.core.repository
 
+import android.util.Log
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
+import androidx.paging.log
 import com.miftah.sehaty.core.data.local.entity.HistoryScannedEntity
 import com.miftah.sehaty.core.data.local.room.AppDatabase
 import com.miftah.sehaty.core.data.remote.dto.request.SignKeyRequest
@@ -52,9 +54,7 @@ class AppRepositoryImpl @Inject constructor(
     override suspend fun saveHistoryToDB(historyScanned: HistoryScanned): Flow<UiState<String>> = flow {
         emit(UiState.Loading)
         try {
-            val result = appDatabase.historyScannedDao()
-                .insertHistoryScanned(historyScanned.convertToHistoryEntity())
-
+            appDatabase.historyScannedDao().insertHistoryScanned(historyScanned.convertToHistoryEntity())
             emit(UiState.Success("Scc"))
         } catch (e: Exception) {
             emit(UiState.Error(e.message ?: "Err"))
@@ -66,6 +66,7 @@ class AppRepositoryImpl @Inject constructor(
         search: String,
         isActive: Boolean
     ): Flow<PagingData<HistoryScannedEntity>> {
+        Log.d("TAG", "getAllHistory: ")
         return Pager(
             config = PagingConfig(pageSize = 10),
             remoteMediator = HistoryScannedRemoteMediator(
