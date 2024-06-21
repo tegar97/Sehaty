@@ -3,10 +3,16 @@ package com.miftah.sehaty.core.data.remote.dto.request
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
-data class FoodSaveRequest(
+/*data class FoodSaveRequest(
     val name: RequestBody,
     val nutrition: NutritionRequest,
     val photo: MultipartBody.Part
+)*/
+
+data class FoodSaveRequest(
+    val name: String,
+    val nutrition: NutritionRequest,
+    val photo: String
 )
 
 data class NutritionRequest(

@@ -9,4 +9,8 @@ interface UserPreference {
 
     fun readAppEntry(): Flow<Boolean>
 
+    fun accountIsActive(): Flow<Boolean>
+
+    suspend fun activateAccount()
+
 }

@@ -22,7 +22,8 @@ import com.miftah.sehaty.ui.theme.SehatyTheme
 fun ButtonPrimary(
     modifier: Modifier = Modifier,
     enabled : Boolean = true,
-    color: Color = MaterialTheme.colorScheme.primary,
+    textColor: Color,
+    containerColor: Color,
     title: String,
     onAction: () -> Unit
 ) {
@@ -30,12 +31,16 @@ fun ButtonPrimary(
         enabled = enabled,
         modifier = modifier,
         onClick = onAction,
-        shape = RoundedCornerShape(15.dp, 15.dp, 15.dp, 15.dp),
+        shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors().copy(
-            containerColor = color
+            containerColor = containerColor
         )
     ) {
-        Text(text = title, style = MaterialTheme.typography.labelLarge)
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelLarge,
+            color = textColor
+        )
     }
 }
 
@@ -43,9 +48,14 @@ fun ButtonPrimary(
 @Composable
 private fun ButtonPrimaryPreview() {
     SehatyTheme {
-        /*ButtonPrimary(
+        ButtonPrimary(
             modifier = Modifier.fillMaxWidth().height(60.dp),
-            false
-        )*/
+            enabled = true,
+            title = "testing",
+            containerColor = MaterialTheme.colorScheme.secondary,
+            textColor = MaterialTheme.colorScheme.onSecondary
+        ) {
+
+        }
     }
 }

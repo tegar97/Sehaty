@@ -13,7 +13,7 @@ data class HistoryScannedEntity(
     val id: Int? = null,
 
     @ColumnInfo("createdAt")
-    val createdAt: String,
+    val createdAt: String? = null,
 
     @ColumnInfo("dietaryFiber")
     val dietaryFiber: Int,

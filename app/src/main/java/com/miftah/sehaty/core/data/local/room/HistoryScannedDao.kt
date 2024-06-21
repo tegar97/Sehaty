@@ -10,7 +10,10 @@ import com.miftah.sehaty.core.data.local.entity.HistoryScannedEntity
 @Dao
 interface HistoryScannedDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertHistoryScanned(movie: List<HistoryScannedEntity>)
+    suspend fun insertHistoriesScanned(historiesEntity: List<HistoryScannedEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertHistoryScanned(historyEntity: HistoryScannedEntity)
 
     @Query("SELECT * FROM historyScanItem")
     fun getAllHistoryScanned(): PagingSource<Int, HistoryScannedEntity>

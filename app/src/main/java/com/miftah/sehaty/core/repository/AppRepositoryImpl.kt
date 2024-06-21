@@ -14,6 +14,7 @@ import com.miftah.sehaty.domain.model.FoodForCloud
 import com.miftah.sehaty.domain.model.HistoryScanned
 import com.miftah.sehaty.domain.model.convertToFoodAfterScan
 import com.miftah.sehaty.domain.model.convertToFoodRequest
+import com.miftah.sehaty.domain.model.convertToHistoryEntity
 import com.miftah.sehaty.domain.model.convertToHistoryScanned
 import com.miftah.sehaty.domain.model.getHistoryConvertToScanItem
 import com.miftah.sehaty.domain.repository.AppRepository
@@ -48,11 +49,31 @@ class AppRepositoryImpl @Inject constructor(
             }
         }
 
+    override suspend fun saveHistoryToDB(historyScanned: HistoryScanned): Flow<UiState<String>> = flow {
+        emit(UiState.Loading)
+        try {
+            val result = appDatabase.historyScannedDao()
+                .insertHistoryScanned(historyScanned.convertToHistoryEntity())
+
+            emit(UiState.Success("Scc"))
+        } catch (e: Exception) {
+            emit(UiState.Error(e.message ?: "Err"))
+        }
+    }
+
     @OptIn(ExperimentalPagingApi::class)
-    override fun getAllHistory(search: String): Flow<PagingData<HistoryScannedEntity>> {
+    override fun getAllHistory(
+        search: String,
+        isActive: Boolean
+    ): Flow<PagingData<HistoryScannedEntity>> {
         return Pager(
             config = PagingConfig(pageSize = 10),
-            remoteMediator = HistoryScannedRemoteMediator(apiService, appDatabase, search),
+            remoteMediator = HistoryScannedRemoteMediator(
+                apiService,
+                appDatabase,
+                search,
+                isActive
+            ),
             pagingSourceFactory = {
                 appDatabase.historyScannedDao().getAllHistoryScanned()
             }
@@ -100,8 +121,9 @@ class AppRepositoryImpl @Inject constructor(
     override fun saveScanHistoryToCloud(foodForCloud: FoodForCloud): Flow<UiState<String>> = flow {
         emit(UiState.Loading)
         try {
-            val (name, nutrition, photo) = foodForCloud.convertToFoodRequest()
-            val result = apiService.addHistory(name, photo, nutrition)
+            /*val (name, nutrition, photo) = foodForCloud.convertToFoodRequest()
+            val result = apiService.addHistory(name, photo, nutrition)*/
+            val result = apiService.addHistory(foodForCloud.convertToFoodRequest())
             if (result.error != null) {
                 emit(UiState.Error(result.message))
             } else {

@@ -2,9 +2,11 @@ package com.miftah.sehaty.domain.model
 
 import com.miftah.sehaty.core.data.local.entity.HistoryScannedEntity
 import com.miftah.sehaty.core.data.remote.dto.response.GetHistoryResponse
+import com.miftah.sehaty.utils.AppUtility.fromListToString
+import com.miftah.sehaty.utils.AppUtility.fromStringToList
 
 data class HistoryScanned(
-    val createdAt: String,
+    val createdAt: String? = null,
     val dietaryFiber: Int,
     val energy: Int,
     val grade: String,
@@ -61,7 +63,7 @@ fun GetHistoryResponse.getHistoryConvertToScanItem(): List<HistoryScanned> {
     return result
 }
 
-fun HistoryScannedEntity.convertToHistoryScanned() =
+fun HistoryScannedEntity.convertToHistoryScanned() : HistoryScanned =
     HistoryScanned(
         totalCarbs = totalCarbs,
         totalFat = totalFat,
@@ -87,74 +89,53 @@ fun HistoryScannedEntity.convertToHistoryScanned() =
         nutriScore = nutriScore
     )
 
-
-/*fun FoodAfterScan.convertToHistoryScanned(productPhoto: String) =
-    HistoryScanned(
-        sugars = sugars,
-        sodium = sodium,
-        productPhoto = productPhoto,
+fun HistoryScanned.convertToHistoryEntity() : HistoryScannedEntity =
+    HistoryScannedEntity(
         totalCarbs = totalCarbs,
-        createdAt =
-    )*/
+        totalFat = totalFat,
+        productPhoto = productPhoto,
+        sugars = sugars,
+        warnings = fromListToString(warnings),
+        productName = productName,
+        sodium = sodium,
+        createdAt = createdAt,
+        portion100gSize = portion100gSize,
+        dietaryFiber = dietaryFiber,
+        protein = protein,
+        portionSize = portionSize,
+        energy = energy,
+        portion100gDietaryFiber = portion100gDietaryFiber,
+        portion100gEnergy = portion100gEnergy,
+        portion100gProtein = portion100gProtein,
+        portion100gSodium = portion100gSodium,
+        portion100gSugars = portion100gSugars,
+        portion100gTotalCarbs = portion100gTotalCarbs,
+        portion100gTotalFat = portion100gTotalFat,
+        grade = grade,
+        nutriScore = nutriScore
+    )
 
-/*fun ScanNutritionResponse.scanNutritionToScanItem(): ScanItem =
-    this.data!!.let {
-        return ScanItem(
-            totalCarbs = it.nutrition.totalCarbs,
-            totalFat = it.nutrition.totalFat,
-            dietaryFiber = it.nutrition.dietaryFiber,
-            portionSize = it.nutrition.portionSize,
-            protein = it.nutrition.protein,
-            sodium = it.nutrition.sodium,
-            sugars = it.nutrition.sugars,
-            energy = it.nutrition.energy,
-            nutriScore = it.nutriScore,
-            grade = it.grade,
-            portion100gSize = it.portion100g.portionSize,
-            warnings = it.warnings,
-            portion100gDietaryFiber = it.portion100g.dietaryFiber,
-            portion100gEnergy = it.portion100g.energy,
-            portion100gProtein = it.portion100g.protein,
-            portion100gSodium = it.portion100g.sodium,
-            portion100gSugars = it.portion100g.sugars,
-            portion100gTotalCarbs = it.portion100g.totalCarbs,
-            portion100gTotalFat = it.portion100g.totalFat,
-            productName = it.
-        )
-    }*/
-
-/*fun DetailHistoryResponse.detailHistoryToScanItem(): ScanItem =
-    this.data!!.let {
-        return ScanItem(
-            totalCarbs = it.totalCarbs,
-            totalFat = it.totalFat,
-            dietaryFiber = it.dietaryFiber,
-            portionSize = it.portionSize,
-            protein = it.protein,
-            sodium = it.sodium,
-            sugars = it.sugars,
-            energy = it.energy,
-            portion100gSize = it.portion100gSize,
-            warnings = listOf(it.warnings),
-            productPhoto = it.productPhoto,
-        )
-    }*/
-
-/*
-fun HistorySaveResponse.historySaveToScanItem(): ScanItem =
-    this.data!!.let {
-        return ScanItem(
-            totalCarbs = it.nutrition.totalCarbs,
-            totalFat = it.nutrition.totalFat,
-            dietaryFiber = it.nutrition.dietaryFiber,
-            portionSize = it.nutrition.portionSize,
-            protein = it.nutrition.protein,
-            sodium = it.nutrition.sodium,
-            sugars = it.nutrition.sugars,
-            energy = it.nutrition.energy,
-            portion100gSize = it.portion100g.portionSize,
-            warnings = it.warnings,
-            createdAt = it.createdAt,
-        )
-    }
-*/
+fun FoodAfterScan.convertToHistoryScan(): HistoryScanned =
+    HistoryScanned(
+        totalCarbs = totalCarbs,
+        totalFat = totalFat,
+        productPhoto = productPhoto,
+        sugars = sugars,
+        warnings = warnings,
+        productName = productName?:"",
+        sodium = sodium,
+        dietaryFiber = dietaryFiber,
+        protein = protein,
+        portionSize = portionSize,
+        energy = energy,
+        portion100gDietaryFiber = dietaryFiber100g,
+        portion100gTotalCarbs = totalCarbs100g,
+        portion100gTotalFat = totalFat100g,
+        portion100gEnergy = energy100g,
+        portion100gSodium = sodium100g,
+        portion100gSugars = sugars100g,
+        portion100gProtein = protein100g,
+        portion100gSize = portionSize100g,
+        grade = grade,
+        nutriScore = nutriScore
+    )

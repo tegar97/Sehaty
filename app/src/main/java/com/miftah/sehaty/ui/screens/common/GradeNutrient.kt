@@ -14,7 +14,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.miftah.sehaty.ui.theme.Grey50
 import com.miftah.sehaty.ui.theme.SehatyTheme
+import com.miftah.sehaty.ui.theme.White50
 
 @Composable
 fun GradeNutrient(
@@ -43,7 +45,7 @@ fun GradeNutrient(
             progress = { percentage },
             color = indicatorColor,
             modifier = Modifier.size(indicatorSize.dp),
-            trackColor = Color.Gray
+            trackColor = White50
         )
     }
 }
@@ -51,13 +53,14 @@ fun GradeNutrient(
 @Preview
 @Composable
 private fun GradeNutrientPreview() {
-    /*SehatyTheme {
+    SehatyTheme {
         GradeNutrient(
             fontSize = 25,
             indicatorSize = 50,
             percentage = 0.6f,
             strokeWidth = 5,
-            indicatorColor = Color.Red
+            indicatorColor = Color.Red,
+            score = "A"
         )
-    }*/
+    }
 }

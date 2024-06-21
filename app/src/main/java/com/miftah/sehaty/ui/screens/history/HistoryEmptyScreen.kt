@@ -14,7 +14,6 @@ import com.miftah.sehaty.ui.theme.SehatyTheme
 @Composable
 fun HistoryEmptyScreen(modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

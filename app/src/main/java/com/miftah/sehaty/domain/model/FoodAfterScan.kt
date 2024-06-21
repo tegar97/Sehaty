@@ -13,7 +13,6 @@ data class FoodAfterScan(
     val warnings: List<String>,
     val dietaryFiber: Int,
     val energy: Int,
-    val kolestrol: Int,
     val portionSize: Int,
     val protein: Int,
     val sodium: Int,
@@ -27,7 +26,8 @@ data class FoodAfterScan(
     val sodium100g: Int,
     val sugars100g: Int,
     val totalCarbs100g: Int,
-    val totalFat100g: Int
+    val totalFat100g: Int,
+    val cholesterol : Int? = null
 ) : Parcelable
 
 fun ScanNutritionResponse.convertToFoodAfterScan(): FoodAfterScan {
@@ -43,7 +43,6 @@ fun ScanNutritionResponse.convertToFoodAfterScan(): FoodAfterScan {
             totalCarbs = it.nutrition.totalCarbs,
             sodium = it.nutrition.sodium,
             sugars = it.nutrition.sugars,
-            kolestrol = it.nutrition.kolestrol,
             protein = it.nutrition.protein,
             dietaryFiber100g = it.portion100g.dietaryFiber,
             totalCarbs100g = it.nutrition.totalCarbs,
@@ -57,3 +56,28 @@ fun ScanNutritionResponse.convertToFoodAfterScan(): FoodAfterScan {
         )
     }
 }
+
+fun HistoryScanned.convertToFoodAfterScan(): FoodAfterScan =
+    FoodAfterScan(
+        totalCarbs = totalCarbs,
+        totalFat = totalFat,
+        productPhoto = productPhoto,
+        sugars = sugars,
+        warnings = warnings,
+        productName = productName,
+        sodium = sodium,
+        dietaryFiber = dietaryFiber,
+        protein = protein,
+        portionSize = portionSize,
+        energy = energy,
+        dietaryFiber100g = portion100gDietaryFiber,
+        totalCarbs100g = portion100gTotalCarbs,
+        totalFat100g = portion100gTotalFat,
+        energy100g = portion100gEnergy,
+        sodium100g = portion100gSodium,
+        sugars100g = portion100gSugars,
+        protein100g = portion100gProtein,
+        portionSize100g = portion100gSize,
+        grade = grade,
+        nutriScore = nutriScore
+    )

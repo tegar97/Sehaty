@@ -32,16 +32,12 @@ fun SettingScreen(
             .padding(horizontal = 16.dp)
     ) {
         item {
-            Spacer(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .height(MaterialTheme.dimens.small2)
-            )
             Text(
-                modifier = Modifier.padding(bottom = 16.dp),
+                modifier = Modifier.padding(top = MaterialTheme.dimens.medium1),
                 text = "Settings",
                 style = MaterialTheme.typography.titleLarge
             )
+            Spacer(modifier = Modifier.padding(bottom = MaterialTheme.dimens.medium1))
         }
         items(itemSettings) {
             SettingItem(

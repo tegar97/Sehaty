@@ -1,14 +1,17 @@
 package com.miftah.sehaty.ui.screens.history
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -45,6 +48,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import com.miftah.sehaty.domain.model.convertToHistoryScanned
 import eu.bambooapps.material3.pullrefresh.PullRefreshIndicator
 import eu.bambooapps.material3.pullrefresh.pullRefresh
 import eu.bambooapps.material3.pullrefresh.rememberPullRefreshState
@@ -52,17 +56,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun HistoryScreen(
     modifier: Modifier = Modifier,
     state: SearchState,
     event: (HistoryEvent) -> Unit,
-    navigateToDetail: (Int) -> Unit
+    navigateToDetail: (HistoryScanned) -> Unit
 ) {
-
     val refreshScope = rememberCoroutineScope()
-//    val refreshing = rememberPullToRefreshState()
 
     val isRefreshing by remember {
         mutableStateOf(false)
@@ -70,69 +72,126 @@ fun HistoryScreen(
 
     val historyItemsEntity = state.scanHistory?.collectAsLazyPagingItems()
 
-    val refreshing = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = {
-        historyItemsEntity?.refresh()
-    })
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-    ) {
-        Text(
-            modifier = Modifier.padding(top = MaterialTheme.dimens.small1),
-            text = "Scan History",
-            style = MaterialTheme.typography.titleLarge
-        )
-        MainSearchBar(
-            modifier = Modifier.padding(top = MaterialTheme.dimens.medium1),
-            isActive = false,
-            query = state.searchQuery,
-            onSearch = {},
-            onQueryChange = {
-                event(HistoryEvent.UpdateSearchQuery(it))
+    val refreshing = rememberPullRefreshState(
+        refreshing = isRefreshing,
+        onRefresh = {
+            refreshScope.launch {
+                historyItemsEntity?.refresh()
+                delay(1500)
             }
-        )
-
-
+        }
+    )
+    if (historyItemsEntity?.itemCount == 0 || historyItemsEntity == null || historyItemsEntity.loadState.hasError) {
         Box(
-            modifier = Modifier
-                .padding(top = 16.dp)
+            modifier = modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
         ) {
-            if (historyItemsEntity?.itemCount == 0 || historyItemsEntity == null) {
-                HistoryEmptyScreen(modifier = modifier.pullRefresh(refreshing))
-            } else {
-                LazyColumn(
-                    modifier = modifier.pullRefresh(refreshing),
-                    contentPadding = PaddingValues(vertical = 8.dp),
-                ) {
-                    items(count = historyItemsEntity.itemCount) {
-                        historyItemsEntity[it].let { history ->
-                            if (history != null) {
-                                HistoryCard(
-                                    modifier = Modifier
-                                        .clickable {
-                                            navigateToDetail(history.id!!)
-                                        },
-                                    urlImage = history.productPhoto,
-                                    itemName = history.productName,
-                                    itemsChip = fromStringToList(history.warnings).map { text ->
-                                        ChipAndWarning(text, Color.Red, Color.White)
-                                    }
-                                )
-                            }
+            LazyColumn(
+                modifier = modifier
+                    .pullRefresh(refreshing)
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(vertical = 8.dp),
+            ) {
+                item {
+                    Text(
+                        modifier = Modifier.padding(top = MaterialTheme.dimens.medium1),
+                        text = "Scan History",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    MainSearchBar(
+                        modifier = Modifier.padding(top = MaterialTheme.dimens.medium1).fillMaxWidth().padding(top = 16.dp),
+                        query = state.searchQuery,
+                        onQueryChange = {
+                            event(HistoryEvent.UpdateSearchQuery(it))
+                        },
+                    ){
+
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (historyItemsEntity?.loadState?.hasError == true) {
+                    Text(text = "Something wrong like your life")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = "Pull to refresh")
+                } else {
+                    Text(text = "Its empty like your life")
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = "Pull to refresh")
+                }
+
+            }
+
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = refreshing,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+            )
+        }
+    } else {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+        ) {
+            LazyColumn(
+                modifier = modifier
+                    .pullRefresh(refreshing)
+                    .fillMaxSize(),
+                contentPadding = PaddingValues(vertical = 8.dp),
+            ) {
+                stickyHeader {
+                    Text(
+                        modifier = Modifier.padding(top = MaterialTheme.dimens.medium1),
+                        text = "Scan History",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    MainSearchBar(
+                        modifier = Modifier.padding(top = MaterialTheme.dimens.medium1, bottom = MaterialTheme.dimens.small2).fillMaxWidth(),
+                        query = state.searchQuery,
+                        onQueryChange = {
+                            event(HistoryEvent.UpdateSearchQuery(it))
+                        },
+                    ){
+
+                    }
+                }
+                items(count = historyItemsEntity.itemCount) {
+                    historyItemsEntity[it].let { history ->
+                        history?.let {
+                            HistoryCard(
+                                modifier = Modifier.padding(bottom = 8.dp)
+                                    .clickable {
+                                        navigateToDetail(history.convertToHistoryScanned())
+                                    },
+                                urlImage = history.productPhoto,
+                                itemName = history.productName,
+                                itemsChip = fromStringToList(history.warnings).map { text ->
+                                    ChipAndWarning(text, Color.Red, Color.White)
+                                }
+                            )
                         }
                     }
                 }
-                PullRefreshIndicator(
-                    refreshing = isRefreshing,
-                    state = refreshing,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                )
             }
+
+            PullRefreshIndicator(
+                refreshing = isRefreshing,
+                state = refreshing,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+            )
         }
     }
+
+
 }
 
 

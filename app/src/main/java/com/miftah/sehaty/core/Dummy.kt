@@ -1,6 +1,9 @@
 package com.miftah.sehaty.core
 
+import com.miftah.sehaty.domain.model.FoodAfterScan
 import com.miftah.sehaty.domain.model.HistoryScanned
+import com.miftah.sehaty.utils.AppUtility.getRandomString
+import com.miftah.sehaty.utils.generateRandomTitle
 
 /*fun dummyHistoriesScanned(count : Int) : List<HistoryScanned> {
     val result : MutableList<HistoryScanned> = arrayListOf()
@@ -83,5 +86,31 @@ fun dummyPortion100g(index: Int) : Portion100g {
     )
 }*/
 
+fun dummyFoodAfterScan() : FoodAfterScan {
+    return FoodAfterScan(
+        sodium = 100,
+        dietaryFiber = 100,
+        portionSize = 100,
+        totalCarbs = 100,
+        productPhoto = "https://sehaty.akutegar.com/uploads/1718869390165-label nutrisi berbahaya.jpeg",
+        grade = getRandomString(10),
+        totalFat = 100,
+        sugars = 100,
+        energy = 100,
+        protein = 100,
+        dietaryFiber100g = 100,
+        productName = getRandomString(10),
+        nutriScore = 100,
+        totalCarbs100g = 100,
+        sugars100g = 100,
+        sodium100g = 100,
+        totalFat100g = 100,
+        energy100g = 100,
+        warnings = listOf("Sugar"),
+        cholesterol = 100,
+        protein100g = 100,
+        portionSize100g = "100"
+    )
+}
 
 

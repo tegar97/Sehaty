@@ -3,6 +3,7 @@ package com.miftah.sehaty.ui.screens.onboarding
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -53,7 +54,7 @@ fun OnBoardingScreen(
     state: OnBoardingState,
     onEvent: (OnBoardingEvent) -> Unit
 ) {
-    Column {
+    Box {
         Column(modifier = Modifier.fillMaxSize()) {
             val pagerState = rememberPagerState(initialPage = 0) {
                 pages.size
@@ -119,32 +120,27 @@ fun OnBoardingScreen(
                 }
             }
             Spacer(modifier = Modifier.weight(0.5f))
-            LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.secondary,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-            )
-            state.generateJWT?.collectAsState(initial = null)?.value.let { generateResponse ->
-                when (generateResponse) {
-                    is UiState.Error -> {
-                        AlertDialog(onDismissRequest = { }, confirmButton = { }, title = {
-                            Text(text = "Err")
-                        }, text = {
-                            Text(text = generateResponse.error)
-                        })
-                    }
-                    UiState.Loading -> {
-                        LinearProgressIndicator(
-                            modifier = Modifier.fillMaxWidth(),
-                            color = MaterialTheme.colorScheme.secondary,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant,
-                        )
-                    }
-                    is UiState.Success -> {
-                        onEvent(OnBoardingEvent.SaveAppJWT(generateResponse.data))
-                    }
-                    null -> {}
+        }
+        state.generateJWT?.collectAsState(initial = null)?.value.let { generateResponse ->
+            when (generateResponse) {
+                is UiState.Error -> {
+                    AlertDialog(onDismissRequest = { }, confirmButton = { }, title = {
+                        Text(text = "Err")
+                    }, text = {
+                        Text(text = generateResponse.error)
+                    })
                 }
+                UiState.Loading -> {
+                    LinearProgressIndicator(
+                        modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
+                        color = MaterialTheme.colorScheme.onSecondaryContainer,
+                        trackColor = MaterialTheme.colorScheme.secondaryContainer,
+                    )
+                }
+                is UiState.Success -> {
+                    onEvent(OnBoardingEvent.SaveAppJWT(generateResponse.data))
+                }
+                null -> {}
             }
         }
     }

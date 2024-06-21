@@ -1,5 +1,6 @@
 package com.miftah.sehaty.ui.screens.navigator
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -7,6 +8,7 @@ import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -17,15 +19,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.miftah.sehaty.R
 import com.miftah.sehaty.domain.model.FoodAfterScan
+import com.miftah.sehaty.domain.model.convertToFoodAfterScan
 import com.miftah.sehaty.ui.screens.detail.DetailEvent
 import com.miftah.sehaty.ui.screens.detail.DetailScreen
 import com.miftah.sehaty.ui.screens.detail.DetailViewModel
@@ -38,6 +44,7 @@ import com.miftah.sehaty.ui.screens.scan.ScanScreen
 import com.miftah.sehaty.ui.screens.scan.ScanViewModel
 import com.miftah.sehaty.ui.screens.setting.SettingData
 import com.miftah.sehaty.ui.screens.setting.SettingScreen
+import com.miftah.sehaty.ui.theme.SehatyTheme
 import com.miftah.sehaty.utils.Constant.FOOD_AFTER_SCAN
 import com.miftah.sehaty.utils.Constant.FOOD_URI
 
@@ -83,15 +90,12 @@ fun MainNavigator(
                     selectedItem = selectedItem
                 )
             }
-
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.surface
     ) { innerPadding ->
-
-        val bottomPadding = innerPadding.calculateBottomPadding()
-        val topPadding = innerPadding.calculateTopPadding()
-
         Surface(
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding),
+            color = MaterialTheme.colorScheme.surface
         ) {
             NavHost(
                 navController = navController,
@@ -100,17 +104,17 @@ fun MainNavigator(
                 composable(route = Route.HistoryScreen.route) {
                     val viewModel: HistoryViewModel = hiltViewModel()
 
-                    /*var query by remember { mutableStateOf("") }
                     HistoryScreen(
-                        query = query,
-                        onQueryChange = {
-                            query = it
-                        },
-                        onSearch = {
-
-                        },
-                        historyScanned = listOf()
-                    )*/
+                        state = viewModel.state.value,
+                        event = viewModel::onEvent,
+                        navigateToDetail = {
+                            navController.currentBackStackEntry?.savedStateHandle?.set(
+                                key = FOOD_AFTER_SCAN,
+                                value = it.convertToFoodAfterScan()
+                            )
+                            navController.navigate(Route.DetailScreen.route)
+                        }
+                    )
                 }
                 composable(route = Route.ScanScreen.route) {
                     val viewModel: ScanViewModel = hiltViewModel()
@@ -125,8 +129,10 @@ fun MainNavigator(
                     ScanScreen(
                         state = viewModel.scanState.value,
                         onEvent = viewModel::onEvent,
-                        navigateToDetail = goToDetail
-                    )
+                        navigateToDetail = goToDetail,
+                    ){
+                        navController.popBackStack()
+                    }
                 }
                 composable(route = Route.SettingScreen.route) {
                     SettingScreen(
@@ -153,7 +159,11 @@ fun MainNavigator(
                     DetailScreen(
                         state = viewModel.detailState.value,
                         onEvent = viewModel::onEvent
-                    )
+                    ) {
+                        navController.navigate(Route.HistoryScreen.route) {
+                            popUpTo(0)
+                        }
+                    }
                 }
             }
         }

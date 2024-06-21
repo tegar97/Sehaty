@@ -12,17 +12,17 @@ import java.io.File
 
 interface AppRepository {
 
-    fun scanningNutrition(file : File) : Flow<UiState<FoodAfterScan>>
+    fun scanningNutrition(file: File): Flow<UiState<FoodAfterScan>>
 
-    fun getAllHistory(search : String) : Flow<PagingData<HistoryScannedEntity>>
+    fun getAllHistory(search: String, isActive: Boolean): Flow<PagingData<HistoryScannedEntity>>
 
-    fun getJWT(signKey : String) : Flow<UiState<String>>
+    fun getJWT(signKey: String): Flow<UiState<String>>
 
-    fun getDetailHistoryByIndex(index: Int) : Flow<UiState<HistoryScanned>>
+    fun getDetailHistoryByIndex(index: Int): Flow<UiState<HistoryScanned>>
 
-    fun checkSessionWA() : Flow<UiState<String>>
+    fun checkSessionWA(): Flow<UiState<String>>
 
-    fun saveScanHistoryToCloud(foodForCloud : FoodForCloud) : Flow<UiState<String>>
+    fun saveScanHistoryToCloud(foodForCloud: FoodForCloud): Flow<UiState<String>>
 
-
+    suspend fun saveHistoryToDB(historyScanned: HistoryScanned): Flow<UiState<String>>
 }

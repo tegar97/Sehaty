@@ -3,6 +3,9 @@ package com.miftah.sehaty.ui.screens.navigator.navigators
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -10,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Abc
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.DocumentScanner
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
@@ -21,6 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -39,10 +44,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.Wallpapers
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.miftah.sehaty.ui.theme.Grey30
+import com.miftah.sehaty.ui.theme.Grey50
 import com.miftah.sehaty.ui.theme.SehatyTheme
+import com.miftah.sehaty.ui.theme.White50
 import com.miftah.sehaty.ui.theme.dimens
 
 @Composable
@@ -54,29 +63,50 @@ fun MainBottomBar(
 ) {
     BottomAppBar(
         modifier = modifier
-            .clip(RoundedCornerShape(30)),
-        containerColor = Color.Red
+            .clip(RoundedCornerShape(15)),
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLow
     ) {
         items.forEachIndexed { index, item ->
             NavigationBarItem(
+                colors = NavigationBarItemColors(
+                    unselectedIconColor = Grey50,
+                    unselectedTextColor = Grey50,
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    selectedIndicatorColor = Color.Transparent,
+                    disabledIconColor = Grey30,
+                    disabledTextColor = Grey30
+                ),
                 icon = {
                     if (index == 1) {
-                        Box(
-                            modifier
-                                .size(MaterialTheme.dimens.medium3)
-                                .clip(RoundedCornerShape(15.dp))
-                                .background(MaterialTheme.colorScheme.secondary),
-                            contentAlignment = Alignment.Center
+                        IconButton(
+                            modifier = modifier
+                                .aspectRatio(1f)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primaryContainer),
+                            onClick = {
+                                onSelectedChange(index)
+                            }
                         ) {
-                            Icon(imageVector = item.icon, contentDescription = null)
+                            Icon(
+                                imageVector = item.icon,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
                         }
                     } else {
-                        Icon(imageVector = item.icon, contentDescription = null)
+                        Icon(
+                            imageVector = item.icon,
+                            contentDescription = null
+                        )
                     }
 
                 },
                 label = {
-                    if (index != 1) Text(item.label)
+                    if (index != 1) Text(
+                        item.label,
+                        fontSize = 16.sp
+                    )
                 },
                 selected = selectedItem == index,
                 onClick = {
@@ -97,7 +127,7 @@ data class BottomNavigationItem(
 private fun MainBottomBarPrev() {
     val items = listOf(
         BottomNavigationItem(Icons.Default.Home, "Home"),
-        BottomNavigationItem(Icons.Default.DocumentScanner, "Scan"),
+        BottomNavigationItem(Icons.Default.Camera, "Scan"),
         BottomNavigationItem(Icons.Default.Favorite, "Favorite"),
     )
     var selectedItem by remember { mutableIntStateOf(0) }

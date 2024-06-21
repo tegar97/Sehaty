@@ -1,5 +1,6 @@
 package com.miftah.sehaty.core.data.remote.retrofit
 
+import com.miftah.sehaty.core.data.remote.dto.request.FoodSaveRequest
 import com.miftah.sehaty.core.data.remote.dto.request.NutritionRequest
 import com.miftah.sehaty.core.data.remote.dto.request.SignKeyRequest
 import com.miftah.sehaty.core.data.remote.dto.response.CheckResponse
@@ -23,12 +24,15 @@ class ApiServiceImpl @Inject constructor(
     override suspend fun checkSession(): CheckResponse =
         apiService.checkSession()
 
-    override suspend fun addHistory(
+    override suspend fun addHistory(foodSaveRequest: FoodSaveRequest): FoodSaveResponse =
+        apiService.addHistory(foodSaveRequest)
+
+    /*override suspend fun addHistory(
         name: RequestBody,
         photo: MultipartBody.Part,
         nutrition: NutritionRequest
     ): FoodSaveResponse =
-        apiService.addHistory(name, photo, nutrition)
+        apiService.addHistory(name, photo, nutrition)*/
 
     override suspend fun getHistory(): GetHistoryResponse =
         apiService.getHistory()

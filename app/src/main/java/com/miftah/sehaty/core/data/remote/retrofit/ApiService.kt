@@ -1,5 +1,6 @@
 package com.miftah.sehaty.core.data.remote.retrofit
 
+import com.miftah.sehaty.core.data.remote.dto.request.FoodSaveRequest
 import com.miftah.sehaty.core.data.remote.dto.request.NutritionRequest
 import com.miftah.sehaty.core.data.remote.dto.request.SignKeyRequest
 import com.miftah.sehaty.core.data.remote.dto.response.CheckResponse
@@ -26,12 +27,17 @@ interface ApiService {
     @GET("api/whatsapp/check-session")
     suspend fun checkSession(): CheckResponse
 
-    @Multipart
+    /*@Multipart
     @POST("api/product/add-history")
     suspend fun addHistory(
         @Part("name") name: RequestBody,
         @Part photo: MultipartBody.Part,
         @Part("nutrition") nutrition: NutritionRequest
+    ): FoodSaveResponse*/
+
+    @POST("api/product/add-history")
+    suspend fun addHistory(
+        @Body foodSaveRequest: FoodSaveRequest
     ): FoodSaveResponse
 
     @GET("api/product/get-history")

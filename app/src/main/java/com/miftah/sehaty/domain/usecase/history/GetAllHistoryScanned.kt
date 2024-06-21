@@ -12,7 +12,7 @@ import javax.inject.Inject
 class GetAllHistoryScanned @Inject constructor(
     private val appRepository : AppRepository
 ) {
-    operator fun invoke(search: String): Flow<PagingData<HistoryScannedEntity>> {
-        return appRepository.getAllHistory(search)
+    operator fun invoke(search: String, isActive : Boolean): Flow<PagingData<HistoryScannedEntity>> {
+        return appRepository.getAllHistory(search, isActive)
     }
 }

@@ -18,5 +18,6 @@ object Constant {
 
     val JWT_KEY = stringPreferencesKey("jwt")
     val APP_ENTRY = booleanPreferencesKey("AppEntry")
+    val IS_ACTIVE = booleanPreferencesKey("isActive")
 
 }

@@ -8,5 +8,5 @@ import kotlinx.coroutines.flow.Flow
 
 data class SearchState(
     val searchQuery: String = "",
-    val scanHistory: Flow<PagingData<HistoryScannedEntity>>? = null,
+    val scanHistory: Flow<PagingData<HistoryScannedEntity>>? = null
 )

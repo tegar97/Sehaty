@@ -35,12 +35,11 @@ fun ItemChipWarning(
             )
         },
         border = BorderStroke(
-            1.dp,
+            3.dp,
             itemChip.containerColor
         ),
         colors = AssistChipDefaults.assistChipColors().copy(
-            containerColor = itemChip.containerColor,
-            labelColor = itemChip.titleColor
+            labelColor = itemChip.containerColor
         )
     )
 }

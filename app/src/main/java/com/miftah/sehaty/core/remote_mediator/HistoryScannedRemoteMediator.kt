@@ -13,12 +13,14 @@ import com.miftah.sehaty.core.data.local.room.AppDatabase
 import com.miftah.sehaty.core.data.remote.retrofit.ApiService
 import kotlinx.coroutines.flow.Flow
 import retrofit2.HttpException
+import java.util.ArrayList
 
 @OptIn(ExperimentalPagingApi::class)
 class HistoryScannedRemoteMediator(
     private val apiService: ApiService,
     private val appDatabase: AppDatabase,
-    private val search: String?
+    private val search: String?,
+    private val isActive: Boolean
 ) : RemoteMediator<Int, HistoryScannedEntity>() {
     override suspend fun load(
         loadType: LoadType,
@@ -46,18 +48,22 @@ class HistoryScannedRemoteMediator(
         }
 
         try {
-            val responseData = if (search.isNullOrEmpty()) {
-                apiService.getHistory().data.map {
-                    it.convertHistoryScannedEntity()
+            var responseData = emptyList<HistoryScannedEntity>()
+
+            if (isActive) {
+                responseData = if (search.isNullOrEmpty()) {
+                    apiService.getHistory().data.map {
+                        it.convertHistoryScannedEntity()
+                    }
+                } else {
+                    appDatabase.historyScannedDao().searchItem(search)
                 }
-            } else {
-                appDatabase.historyScannedDao().searchItem(search)
             }
 
             val endOfPaginationReached = responseData.isEmpty()
 
             appDatabase.withTransaction {
-                if (loadType == LoadType.REFRESH) {
+                if (loadType == LoadType.REFRESH && isActive) {
                     appDatabase.remoteKeysDao().deleteRemoteKeys()
                     appDatabase.historyScannedDao().deleteAllHistoryScanned()
                 }
@@ -67,7 +73,7 @@ class HistoryScannedRemoteMediator(
                     RemoteKeysEntity(id = it.id, prevKey = prevKey, nextKey = nextKey)
                 }
                 appDatabase.remoteKeysDao().insertAll(keys)
-                appDatabase.historyScannedDao().insertHistoryScanned(responseData)
+                appDatabase.historyScannedDao().insertHistoriesScanned(responseData)
             }
             return MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
         } catch (exception: Exception) {

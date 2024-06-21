@@ -1,5 +1,6 @@
 package com.miftah.sehaty.core.data.remote.retrofit
 
+import com.miftah.sehaty.core.data.remote.dto.request.FoodSaveRequest
 import com.miftah.sehaty.core.data.remote.dto.request.NutritionRequest
 import com.miftah.sehaty.core.data.remote.dto.request.SignKeyRequest
 import com.miftah.sehaty.core.data.remote.dto.response.CheckResponse
@@ -18,11 +19,13 @@ interface ApiHelper {
 
     suspend fun checkSession(): CheckResponse
 
-    suspend fun addHistory(
+    /*suspend fun addHistory(
         name: RequestBody,
         photo: MultipartBody.Part,
         nutrition: NutritionRequest
-    ): FoodSaveResponse
+    ): FoodSaveResponse*/
+
+    suspend fun addHistory(foodSaveRequest: FoodSaveRequest): FoodSaveResponse
 
     suspend fun getHistory(): GetHistoryResponse
 }

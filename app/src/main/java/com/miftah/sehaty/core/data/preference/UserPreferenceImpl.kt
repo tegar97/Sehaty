@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import com.miftah.sehaty.domain.preference.UserPreference
 import com.miftah.sehaty.utils.Constant.APP_ENTRY
+import com.miftah.sehaty.utils.Constant.IS_ACTIVE
 import com.miftah.sehaty.utils.Constant.JWT_KEY
 import com.miftah.sehaty.utils.Constant.SHARED_PREFERENCES_KEY
 import kotlinx.coroutines.flow.Flow
@@ -39,6 +40,18 @@ class UserPreferenceImpl @Inject constructor(private val application: Applicatio
     override fun readAppEntry(): Flow<Boolean> {
         return application.dataStore.data.map { preferences ->
             preferences[APP_ENTRY] ?: false
+        }
+    }
+
+    override fun accountIsActive(): Flow<Boolean> {
+        return application.dataStore.data.map { preferences ->
+            preferences[IS_ACTIVE] ?: false
+        }
+    }
+
+    override suspend fun activateAccount() {
+        application.dataStore.edit { preferences ->
+            preferences[IS_ACTIVE] = true
         }
     }
 }

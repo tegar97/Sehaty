@@ -14,6 +14,7 @@ import android.util.Log
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RestrictTo
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -36,8 +37,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Cameraswitch
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PhotoCamera
@@ -52,6 +55,7 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
@@ -61,6 +65,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -85,6 +90,7 @@ import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
 import com.miftah.sehaty.domain.model.FoodAfterScan
 import com.miftah.sehaty.ui.screens.common.ButtonPrimary
+import com.miftah.sehaty.ui.theme.Grey50
 import com.miftah.sehaty.ui.theme.SehatyTheme
 import com.miftah.sehaty.ui.theme.dimens
 import com.miftah.sehaty.utils.UiState
@@ -96,13 +102,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanScreen(
     modifier: Modifier = Modifier,
     onEvent: (ScanEvent) -> Unit,
     state: ScanState,
-    navigateToDetail: (FoodAfterScan) -> Unit
+    navigateToDetail: (FoodAfterScan) -> Unit,
+    backToHistory: () -> Unit
 ) {
 //    var currentProgress by remember { mutableStateOf(0f) }
 
@@ -110,6 +118,7 @@ fun ScanScreen(
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val scaffoldState = rememberBottomSheetScaffoldState()
+    var lensFacing by remember { mutableIntStateOf(CameraSelector.LENS_FACING_BACK) }
 
     /*val imageBitmap = remember { mutableStateOf<Bitmap?>(null) }
     var imageUri by remember {
@@ -131,6 +140,7 @@ fun ScanScreen(
             }
         }
     }*/
+
     onEvent(ScanEvent.SetContextWeakReference(context))
 
     /*val isOpenOrNot by remember {
@@ -149,20 +159,29 @@ fun ScanScreen(
             }
         }
     )
+
     val controller = remember {
         LifecycleCameraController(context).apply {
             setEnabledUseCases(
                 CameraController.IMAGE_CAPTURE or
                         CameraController.VIDEO_CAPTURE
             )
+
         }
+    }
+
+    val cameraSelector = CameraSelector.Builder()
+        .requireLensFacing(lensFacing)
+        .build()
+
+    LaunchedEffect(lensFacing) {
+        controller.setCameraSelector(cameraSelector)
     }
 
     val imageCropLauncher =
         rememberLauncherForActivityResult(contract = CropImageContract()) { result ->
             if (result.isSuccessful) {
                 onEvent(ScanEvent.SaveToUri(result.uriContent))
-//                saveToUri(result.uriContent)
                 scope.launch {
                     scaffoldState.bottomSheetState.expand()
                 }
@@ -173,29 +192,6 @@ fun ScanScreen(
 
     val cropOptions =
         CropImageContractOptions(state.imageUri, CropImageOptions(imageSourceIncludeCamera = true))
-
-    /*if (imageBitmap.value != null || imageUri != null) {
-        BottomSheetResult(
-            modifier,
-            scaffoldState,
-            imageBitmap,
-            imageUri,
-            context,
-            itemName,
-            onCropAction = {
-                imageCropLauncher.launch(cropOptions)
-            }
-        ) {}
-
-    } else {
-        CameraXExecutors(
-            modifier,
-            controller,
-            launcher,
-            context,
-            saveToUri,
-        )
-    }*/
 
     if (state.imageUri != null) {
         BottomSheetToShowResult(
@@ -214,7 +210,10 @@ fun ScanScreen(
             controller = controller,
             scaffoldState = scaffoldState,
             scope = scope,
-            launcher = launcher
+            launcher = launcher,
+            lensFacing = {
+                lensFacing = if (lensFacing == CameraSelector.LENS_FACING_BACK) CameraSelector.LENS_FACING_FRONT else CameraSelector.LENS_FACING_BACK
+            }
         )
     }
 }
@@ -348,56 +347,95 @@ fun BottomSheetToShowResult(
 ) {
     BottomSheetScaffold(
         modifier = modifier.windowInsetsPadding(WindowInsets.ime),
-        sheetSwipeEnabled = false,
+        sheetSwipeEnabled = true,
         scaffoldState = scaffoldState,
         sheetPeekHeight = 0.dp,
         sheetContent = {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                modifier = modifier.padding(16.dp)
+            Box(
+                modifier = Modifier.wrapContentSize()
             ) {
-                Text(text = "Masukan Nama Makanan")
-                Spacer(
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .height(MaterialTheme.dimens.small2)
-                )
-                OutlinedTextField(
-                    modifier = modifier.fillMaxWidth(),
-                    value = state.imageTitle,
-                    onValueChange = {
-                        onEvent(ScanEvent.WriteItemTitle(it))
-                    },
-                    maxLines = 1,
-                    singleLine = true,
-                )
-                Spacer(modifier = modifier.height(MaterialTheme.dimens.small2))
-                Row(
-                    modifier = modifier.fillMaxWidth()
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    modifier = modifier.padding(16.dp)
                 ) {
-                    ButtonPrimary(
-                        modifier = modifier
-                            .height(MaterialTheme.dimens.buttonHeight)
-                            .weight(1f),
-                        title = "NEXT",
-                    ) {
-                        onEvent(ScanEvent.ScanImage)
-                    }
-                    Spacer(modifier = modifier.width(8.dp))
-                    ButtonPrimary(
-                        modifier = modifier
-                            .height(MaterialTheme.dimens.buttonHeight)
-                            .weight(1f),
-                        title = "CROP",
-                        onAction = onCropAction
+                    Text(
+                        text = "Masukan Nama Makanan",
+                        style = MaterialTheme.typography.labelLarge
                     )
+                    Spacer(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .height(MaterialTheme.dimens.small1)
+                    )
+                    Text(
+                        text = "Agar produk lebih mudah dikenali dalam riwayat pemindaian Anda",
+                        style = MaterialTheme.typography.labelMedium.copy(
+                            color = Grey50
+                        )
+                    )
+                    Spacer(
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .height(MaterialTheme.dimens.small2)
+                    )
+                    OutlinedTextField(
+                        modifier = modifier.fillMaxWidth(),
+                        value = state.imageTitle,
+                        onValueChange = {
+                            onEvent(ScanEvent.WriteItemTitle(it))
+                        },
+                        maxLines = 1,
+                        singleLine = true,
+                    )
+                    Spacer(modifier = modifier.height(MaterialTheme.dimens.small2))
+                    Row(
+                        modifier = modifier.fillMaxWidth()
+                    ) {
+                        ButtonPrimary(
+                            modifier = modifier
+                                .height(MaterialTheme.dimens.buttonHeight)
+                                .weight(1f),
+                            title = "NEXT",
+                            textColor = MaterialTheme.colorScheme.onPrimary,
+                            containerColor = MaterialTheme.colorScheme.primary
+                        ) {
+                            onEvent(ScanEvent.ScanImage)
+                        }
+                        Spacer(modifier = modifier.width(8.dp))
+                        ButtonPrimary(
+                            modifier = modifier
+                                .height(MaterialTheme.dimens.buttonHeight)
+                                .weight(1f),
+                            title = "CROP",
+                            onAction = onCropAction,
+                            textColor = MaterialTheme.colorScheme.onSecondary,
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        )
+                    }
                 }
                 state.scanImageResult?.collectAsState(initial = null)?.value.let { result ->
                     when (result) {
                         is UiState.Error -> {
                             AlertDialog(
-                                onDismissRequest = { },
-                                confirmButton = { },
+                                dismissButton = {
+                                    TextButton(
+                                        onClick = { },
+                                        modifier = Modifier.padding(8.dp),
+                                    ) {
+                                        Text("Dismiss")
+                                    }
+                                },
+                                onDismissRequest = {
+
+                                },
+                                confirmButton = {
+                                    TextButton(
+                                        onClick = { },
+                                        modifier = Modifier.padding(8.dp),
+                                    ) {
+                                        Text("Confirm")
+                                    }
+                                },
                                 title = { Text(text = "Err") },
                                 text = { Text(text = result.error) }
                             )
@@ -405,17 +443,20 @@ fun BottomSheetToShowResult(
 
                         UiState.Loading -> {
                             LinearProgressIndicator(
-                                modifier = Modifier.fillMaxWidth(),
-                                color = MaterialTheme.colorScheme.secondary,
-                                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                                modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
+                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                trackColor = MaterialTheme.colorScheme.secondaryContainer,
                             )
                         }
 
                         is UiState.Success -> {
-                            navigateToDetail(result.data.copy(
-                                productName = state.imageTitle
-                            ))
+                            navigateToDetail(
+                                result.data.copy(
+                                    productName = state.imageTitle
+                                )
+                            )
                         }
+
                         null -> {}
                     }
                 }
@@ -431,6 +472,7 @@ fun BottomSheetToShowResult(
                     .fillMaxSize()
                     .weight(1f)
             ) {
+
                 state.imageBitmap?.let {
                     Image(
                         bitmap = it.asImageBitmap(),
@@ -456,6 +498,7 @@ fun ExecuteCameraXOrOpenGallery(
     context: Context,
     scope: CoroutineScope,
     scaffoldState: BottomSheetScaffoldState,
+    lensFacing: () -> Unit,
     onEvent: (ScanEvent) -> Unit
 ) {
     Column {
@@ -496,6 +539,12 @@ fun ExecuteCameraXOrOpenGallery(
                         Icon(
                             imageVector = Icons.Default.PhotoCamera,
                             contentDescription = "Take Photo "
+                        )
+                    }
+                    IconButton(onClick = lensFacing) {
+                        Icon(
+                            imageVector = Icons.Default.Cameraswitch,
+                            contentDescription = "Switch Lens"
                         )
                     }
                 }

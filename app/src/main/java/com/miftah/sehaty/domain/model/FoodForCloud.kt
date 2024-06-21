@@ -9,9 +9,15 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
-data class FoodForCloud(
+/*data class FoodForCloud(
     val name: String,
     val photo: File,
+    val nutrition: NutritionForCloud
+)*/
+
+data class FoodForCloud(
+    val name: String,
+    val photo: String,
     val nutrition: NutritionForCloud
 )
 
@@ -43,13 +49,17 @@ data class Portion100gFoodForCloud(
 )
 
 fun FoodForCloud.convertToFoodRequest(): FoodSaveRequest {
+    /*
     val name = this.name.toRequestBody("text/plain".toMediaTypeOrNull())
     val requestFile = this.photo.asRequestBody("image/*".toMediaTypeOrNull())
     val photoPart = MultipartBody.Part.createFormData("photo", this.name, requestFile)
+    */
+
+     */
     return FoodSaveRequest(
         nutrition = nutrition.toNutritionRequest(),
         name = name,
-        photo = photoPart
+        photo = photo
     )
 }
 
@@ -82,15 +92,15 @@ fun Portion100gFoodForCloud.toPortion100gRequest(): Portion100gRequest =
         totalFat = totalFat
     )
 
-fun FoodAfterScan.convertFoodAfterScan(name: String, photo: File) : FoodForCloud {
+fun FoodAfterScan.convertToFoodForCloud() : FoodForCloud {
     return FoodForCloud(
-        name = name,
-        photo = photo,
+        name = productName?:"",
+        photo = productPhoto,
         nutrition = NutritionForCloud(
             dietaryFiber = dietaryFiber,
             energy = energy,
             grade = grade,
-            kolestrol = kolestrol,
+            kolestrol = cholesterol?:0,
             nutriScore = nutriScore,
             portionSize = portionSize,
             protein = protein,
