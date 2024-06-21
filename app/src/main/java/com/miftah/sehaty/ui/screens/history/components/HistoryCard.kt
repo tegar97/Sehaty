@@ -73,7 +73,7 @@ fun HistoryCard(
         )
     ) {
         ConstraintLayout(
-            modifier = Modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth()
         ) {
             val (image, title, time) = createRefs()
 
