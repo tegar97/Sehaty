@@ -7,5 +7,6 @@ import kotlinx.coroutines.flow.Flow
 data class DetailState (
     val foodAfterScan: FoodAfterScan? = null,
     val saveFoodAfterScan: Flow<UiState<String>>?  = null,
-    val isActive : Boolean = false
+    val isActive : Boolean = false,
+    val dataNutrientPercentage : NutrientPercentage? = null
 )

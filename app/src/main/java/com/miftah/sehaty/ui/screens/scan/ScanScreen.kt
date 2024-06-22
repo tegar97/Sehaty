@@ -38,9 +38,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cameraswitch
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Crop
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.PhotoCamera
@@ -48,6 +52,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.BottomSheetScaffoldState
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -72,6 +77,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -162,6 +168,8 @@ fun ScanScreen(
     val cropOptions =
         CropImageContractOptions(state.imageUri, CropImageOptions(imageSourceIncludeCamera = true))
 
+
+
     if (state.imageUri != null) {
         BottomSheetToShowResult(
             state = state,
@@ -170,7 +178,8 @@ fun ScanScreen(
             navigateToDetail = navigateToDetail,
             onCropAction = {
                 imageCropLauncher.launch(cropOptions)
-            }
+            },
+            backToHistory = backToHistory
         )
     } else {
         ExecuteCameraXOrOpenGallery(
@@ -181,8 +190,10 @@ fun ScanScreen(
             scope = scope,
             launcher = launcher,
             lensFacing = {
-                lensFacing = if (lensFacing == CameraSelector.LENS_FACING_BACK) CameraSelector.LENS_FACING_FRONT else CameraSelector.LENS_FACING_BACK
-            }
+                lensFacing =
+                    if (lensFacing == CameraSelector.LENS_FACING_BACK) CameraSelector.LENS_FACING_FRONT else CameraSelector.LENS_FACING_BACK
+            },
+            backToHistory = backToHistory
         )
     }
 }
@@ -209,7 +220,8 @@ fun BottomSheetToShowResult(
     onEvent: (ScanEvent) -> Unit,
     onCropAction: (() -> Unit),
     state: ScanState,
-    navigateToDetail: (FoodAfterScan) -> Unit
+    navigateToDetail: (FoodAfterScan) -> Unit,
+    backToHistory: () -> Unit
 ) {
     BottomSheetScaffold(
         modifier = modifier.windowInsetsPadding(WindowInsets.ime),
@@ -267,18 +279,9 @@ fun BottomSheetToShowResult(
                         ) {
                             onEvent(ScanEvent.ScanImage)
                         }
-                        Spacer(modifier = modifier.width(8.dp))
-                        ButtonPrimary(
-                            modifier = modifier
-                                .height(MaterialTheme.dimens.buttonHeight)
-                                .weight(1f),
-                            title = "CROP",
-                            onAction = onCropAction,
-                            textColor = MaterialTheme.colorScheme.onSecondary,
-                            containerColor = MaterialTheme.colorScheme.secondary
-                        )
                     }
                 }
+
                 state.scanImageResult?.collectAsState(initial = null)?.value.let { result ->
                     when (result) {
                         is UiState.Error -> {
@@ -309,7 +312,9 @@ fun BottomSheetToShowResult(
 
                         UiState.Loading -> {
                             LinearProgressIndicator(
-                                modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .align(Alignment.TopCenter),
                                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                                 trackColor = MaterialTheme.colorScheme.secondaryContainer,
                             )
@@ -328,27 +333,63 @@ fun BottomSheetToShowResult(
                 }
             }
         }) { padding ->
-        Column(
-            modifier = Modifier
+        Box(
+            modifier = modifier
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            Box(
-                modifier = modifier
-                    .fillMaxSize()
-                    .weight(1f)
+            state.imageBitmap?.let {
+                Image(
+                    bitmap = it.asImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black),
+                    contentScale = ContentScale.Crop
+                )
+            }
+            Button(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.TopEnd)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.Black.copy(alpha = 0.5f)),
+                onClick = onCropAction,
+                colors = ButtonDefaults.buttonColors().copy(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.White,
+                )
             ) {
-
-                state.imageBitmap?.let {
-                    Image(
-                        bitmap = it.asImageBitmap(),
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Crop,
                         contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black),
-                        contentScale = ContentScale.Crop
+                        tint = Color.White
+                    )
+                    Spacer(modifier = Modifier.padding(12.dp))
+                    Text(
+                        text = "Crop Image",
+                        color = Color.White
                     )
                 }
+            }
+            IconButton(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.TopStart)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.5f))
+                    .size(32.dp),
+                onClick = backToHistory
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null,
+                    tint = Color.White
+                )
             }
         }
     }
@@ -365,7 +406,8 @@ fun ExecuteCameraXOrOpenGallery(
     scope: CoroutineScope,
     scaffoldState: BottomSheetScaffoldState,
     lensFacing: () -> Unit,
-    onEvent: (ScanEvent) -> Unit
+    onEvent: (ScanEvent) -> Unit,
+    backToHistory: () -> Unit
 ) {
     Column {
         Box(
@@ -382,32 +424,45 @@ fun ExecuteCameraXOrOpenGallery(
                         .padding(16.dp),
                     horizontalArrangement = Arrangement.SpaceAround
                 ) {
-                    IconButton(onClick = {
-                        launcher.launch("image/*")
-                    }) {
+                    Button(
+                        modifier = Modifier.size(64.dp),
+                        onClick = {
+                            launcher.launch("image/*")
+                        },
+                        shape = CircleShape
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Photo,
                             contentDescription = "Open Gallery",
                         )
                     }
-                    IconButton(onClick = {
-                        takePhoto(
-                            controller = controller,
-                            context = context,
-                            onPhotoTaken = { bitmap ->
-                                onEvent(ScanEvent.SaveToUri(saveBitmapToFile(context, bitmap)))
-                                scope.launch {
-                                    scaffoldState.bottomSheetState.expand()
+                    Button(
+                        modifier = Modifier.size(72.dp),
+                        onClick = {
+                            takePhoto(
+                                controller = controller,
+                                context = context,
+                                onPhotoTaken = { bitmap ->
+                                    onEvent(ScanEvent.SaveToUri(saveBitmapToFile(context, bitmap)))
+                                    scope.launch {
+                                        scaffoldState.bottomSheetState.expand()
+
+                                    }
                                 }
-                            }
-                        )
-                    }) {
+                            )
+                        },
+                        shape = CircleShape
+                    ) {
                         Icon(
                             imageVector = Icons.Default.PhotoCamera,
                             contentDescription = "Take Photo "
                         )
                     }
-                    IconButton(onClick = lensFacing) {
+                    Button(
+                        modifier = modifier.size(64.dp),
+                        onClick = lensFacing,
+                        shape = CircleShape
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Cameraswitch,
                             contentDescription = "Switch Lens"
@@ -418,6 +473,21 @@ fun ExecuteCameraXOrOpenGallery(
                     modifier = modifier
                         .height(MaterialTheme.dimens.medium2)
                         .fillMaxWidth()
+                )
+            }
+            IconButton(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .align(Alignment.TopStart)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(alpha = 0.5f))
+                    .size(32.dp),
+                onClick = backToHistory
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = null,
+                    tint = Color.White
                 )
             }
         }
@@ -477,7 +547,8 @@ private fun PreviewScanScreen() {
             navigateToDetail = {},
             scaffoldState = scaffoldState,
             state = ScanState(),
-            onEvent = {}
+            onEvent = {},
+            backToHistory = {}
         )
     }
 }

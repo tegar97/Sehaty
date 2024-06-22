@@ -49,7 +49,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 import com.miftah.sehaty.domain.model.convertToHistoryScanned
+import com.miftah.sehaty.ui.screens.common.SearchBarSehatySecondary
+import com.miftah.sehaty.ui.screens.common.setSimpleScore
+import com.miftah.sehaty.ui.screens.history.components.HistoriesCard
 import com.miftah.sehaty.ui.theme.Grey30
 import com.miftah.sehaty.ui.theme.Grey50
 import eu.bambooapps.material3.pullrefresh.PullRefreshIndicator
@@ -86,8 +91,58 @@ fun HistoryScreen(
         event(HistoryEvent.SearchNews)
     }
 
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+    ) {
+        LazyColumn(
+            modifier = modifier
+                .pullRefresh(refreshing)
+                .fillMaxSize(),
+            contentPadding = PaddingValues(vertical = 8.dp),
+        ) {
+            stickyHeader {
+                SearchBarSehatySecondary(
+                    modifier = Modifier
+                        .padding(
+                            bottom = MaterialTheme.dimens.small2
+                        )
+                        .fillMaxWidth(),
+                    query = state.searchQuery
+                ) {
+                    event(HistoryEvent.SearchNews)
+                }
+            }
+            items(count = historyItemsEntity?.itemCount?:0) {
+                historyItemsEntity?.get(it)?.let { history ->
+                    HistoriesCard(
+                        modifier = Modifier
+                            .clickable {
+                                navigateToDetail(history.convertToHistoryScanned())
+                            },
+                        urlImage = history.productPhoto,
+                        productName = history.productName,
+                        itemsChip = fromStringToList(history.warnings).map { text ->
+                            ChipAndWarning(text, Color.Red, Color.White)
+                        },
+                        simpleScoreData = setSimpleScore(history.grade)
+                    )
+                    Spacer(modifier = Modifier.padding(bottom = 8.dp))
+                }
+            }
+        }
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = refreshing,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+        )
+    }
+
     if (historyItemsEntity?.itemCount == 0 || historyItemsEntity == null || historyItemsEntity.loadState.hasError) {
-        Box(
+        /*Box(
             modifier = modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
@@ -99,28 +154,14 @@ fun HistoryScreen(
                 contentPadding = PaddingValues(vertical = 8.dp),
             ) {
                 item {
-                    Text(
-                        modifier = Modifier.padding(top = MaterialTheme.dimens.medium1),
-                        text = "Scan History",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Text(
-                        modifier = Modifier.padding(top = 8.dp),
-                        text = "Kamu bisa save history kamu apabila kamu login dengan WhatsApp",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            color = Grey50
-                        )
-                    )
-                    MainSearchBar(
+                    SearchBarSehatySecondary(
                         modifier = Modifier
-                            .padding(top = MaterialTheme.dimens.small2)
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
-                        query = state.searchQuery,
-                        onQueryChange = {
-                            event(HistoryEvent.UpdateSearchQuery(it))
-                        },
-                    ){
+                            .padding(
+                                bottom = MaterialTheme.dimens.small2
+                            )
+                            .fillMaxWidth(),
+                        query = state.searchQuery
+                    ) {
                         event(HistoryEvent.SearchNews)
                     }
                 }
@@ -149,9 +190,9 @@ fun HistoryScreen(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
             )
-        }
+        }*/
     } else {
-        Box(
+        /*Box(
             modifier = modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp)
@@ -163,40 +204,32 @@ fun HistoryScreen(
                 contentPadding = PaddingValues(vertical = 8.dp),
             ) {
                 stickyHeader {
-                    Text(
-                        modifier = Modifier.padding(top = MaterialTheme.dimens.medium1),
-                        text = "Scan History",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    MainSearchBar(
+                    SearchBarSehatySecondary(
                         modifier = Modifier
                             .padding(
-                                top = MaterialTheme.dimens.medium1,
                                 bottom = MaterialTheme.dimens.small2
                             )
                             .fillMaxWidth(),
-                        query = state.searchQuery,
-                        onQueryChange = {
-                            event(HistoryEvent.UpdateSearchQuery(it))
-                        },
-                    ){
-
+                        query = state.searchQuery
+                    ) {
+                        event(HistoryEvent.SearchNews)
                     }
                 }
                 items(count = historyItemsEntity.itemCount) {
                     historyItemsEntity[it].let { history ->
                         history?.let {
-                            HistoryCard(
+                            HistoriesCard(
                                 modifier = Modifier
                                     .padding(bottom = 8.dp)
                                     .clickable {
                                         navigateToDetail(history.convertToHistoryScanned())
                                     },
                                 urlImage = history.productPhoto,
-                                itemName = history.productName,
+                                productName = history.productName,
                                 itemsChip = fromStringToList(history.warnings).map { text ->
                                     ChipAndWarning(text, Color.Red, Color.White)
-                                }
+                                },
+                                simpleScoreData = setSimpleScore(history.grade)
                             )
                         }
                     }
@@ -209,7 +242,7 @@ fun HistoryScreen(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
             )
-        }
+        }*/
     }
 
 
@@ -235,7 +268,7 @@ fun SearchHistoryItemsSection(
                         HistoryCard(
                             modifier = Modifier
                                 .clickable {
-                                    onClick(history.id!!)
+                                    onClick(history.id)
                                 },
                             urlImage = history.productPhoto,
                             itemName = history.productName,
@@ -250,43 +283,6 @@ fun SearchHistoryItemsSection(
     }
 }
 
-/*@Composable
-fun handlePagingResult(articles: LazyPagingItems<HistoryScannedEntity>): Boolean {
-    val loadState = articles.loadState
-    val error = when {
-        loadState.refresh is LoadState.Error -> loadState.refresh as LoadState.Error
-        loadState.prepend is LoadState.Error -> loadState.prepend as LoadState.Error
-        loadState.append is LoadState.Error -> loadState.append as LoadState.Error
-        else -> null
-    }
-
-    return when {
-        loadState.refresh is LoadState.Loading -> {
-            ShimmerEffect()
-            false
-        }
-
-        error != null -> {
-            EmptyScreen(error = error)
-            false
-        }
-
-        else -> {
-            true
-        }
-    }
-}
-
-@Composable
-fun ShimmerEffect() {
-    Column(verticalArrangement = Arrangement.spacedBy(MediumPadding1)) {
-        repeat(10) {
-            ArticleCardShimmerEffect(
-                modifier = Modifier.padding(horizontal = MediumPadding1)
-            )
-        }
-    }
-}*/
 
 @Preview(showBackground = true)
 @Composable

@@ -52,6 +52,7 @@ import com.miftah.sehaty.R
 import com.miftah.sehaty.ui.screens.common.ChipAndWarning
 import com.miftah.sehaty.ui.screens.common.GradeNutrient
 import com.miftah.sehaty.ui.screens.common.ItemChipWarning
+import com.miftah.sehaty.ui.screens.common.SimpleScoreNutrient
 import com.miftah.sehaty.ui.theme.SehatyTheme
 import com.miftah.sehaty.ui.theme.White30
 import com.miftah.sehaty.ui.theme.dimens
@@ -64,13 +65,7 @@ fun HistoryCard(
     itemsChip: List<ChipAndWarning>
 ) {
     ElevatedCard(
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 10.dp
-        ),
-        colors = CardDefaults.elevatedCardColors().copy(
-            containerColor = White30
-        )
+        shape = RoundedCornerShape(8.dp)
     ) {
         ConstraintLayout(
             modifier = modifier.fillMaxWidth()
@@ -85,7 +80,9 @@ fun HistoryCard(
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)
                         bottom.linkTo(parent.bottom)
-                    },
+                    }
+                    .padding(start = 8.dp)
+                    .fillMaxWidth(),
                 model = urlImage,
                 contentDescription = null,
                 contentScale = ContentScale.Crop
@@ -100,29 +97,33 @@ fun HistoryCard(
                     }
             ) {
                 Row(
-                    modifier = Modifier.padding(top = MaterialTheme.dimens.small1),
-                    verticalAlignment = Alignment.Bottom
+                    modifier = Modifier.padding(top = MaterialTheme.dimens.small1).fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
                         modifier = Modifier,
                         text = itemName,
-                        style = MaterialTheme.typography.labelMedium
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            fontSize = 24.sp
+                        )
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         modifier = Modifier.padding(top = 8.dp),
                         text = "100g",
                         style = MaterialTheme.typography.labelSmall
                     )
+//                    SimpleScoreNutrient()
                 }
                 Row(
                     modifier = Modifier.padding(bottom = 24.dp)
                 ) {
-                    itemsChip.forEach {
-                        ItemChipWarning(
-                            modifier = Modifier.padding(end = 8.dp),
-                            itemChip = it
-                        )
+                    if (itemsChip.isNotEmpty()){
+                        itemsChip.forEach {
+                            ItemChipWarning(
+                                modifier = Modifier.padding(end = 8.dp),
+                                itemChip = it
+                            )
+                        }
                     }
                 }
             }
@@ -158,13 +159,8 @@ private fun HistoryCardPrev() {
     SehatyTheme {
         HistoryCard(
             urlImage = "https://tabris.com/wp-content/uploads/2021/06/jetpack-compose-icon_RGB.png",
-            itemName = "Biscuittttttttttttttt",
+            itemName = "Biscuit",
             itemsChip = listOf(
-                ChipAndWarning(
-                    title = "Gula",
-                    containerColor = Color.Red,
-                    titleColor = Color.White
-                ),
                 ChipAndWarning(
                     title = "Gula",
                     containerColor = Color.Red,

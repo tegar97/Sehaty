@@ -65,7 +65,7 @@ private fun SettingScreenPreview() {
                 SettingData(
                     title = "WhatsApp",
                     description = "Connect to WhatsApp",
-                    drawable = R.drawable.whatsapp_ic
+                    drawable = R.drawable.whatsapp_icon
                 )
             )
         ) {

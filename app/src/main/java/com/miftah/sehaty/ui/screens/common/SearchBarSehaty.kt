@@ -35,12 +35,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.miftah.sehaty.ui.theme.Grey30
 import com.miftah.sehaty.ui.theme.Grey50
 import com.miftah.sehaty.ui.theme.Grey70
 import com.miftah.sehaty.ui.theme.SehatyTheme
+import com.miftah.sehaty.ui.theme.White30
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,14 +66,16 @@ fun MainSearchBar(
                 Text(
                     text = "Search History",
                     style = MaterialTheme.typography.labelMedium.copy(
-                        color = Grey70
+                        color = Grey70,
+                        fontWeight = FontWeight.Light
                     )
                 )
             },
             singleLine = true,
             colors = TextFieldDefaults.colors().copy(
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                focusedIndicatorColor = White30,
+                unfocusedIndicatorColor = White30,
+                unfocusedContainerColor = White30
             )
         )
 

@@ -1,7 +1,6 @@
 package com.miftah.sehaty.ui.screens.common
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -14,9 +13,8 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.miftah.sehaty.ui.theme.Grey50
 import com.miftah.sehaty.ui.theme.SehatyTheme
-import com.miftah.sehaty.ui.theme.White50
+import com.miftah.sehaty.ui.theme.Cream50
 
 @Composable
 fun GradeNutrient(
@@ -45,7 +43,7 @@ fun GradeNutrient(
             progress = { percentage },
             color = indicatorColor,
             modifier = Modifier.size(indicatorSize.dp),
-            trackColor = White50
+            trackColor = Cream50
         )
     }
 }

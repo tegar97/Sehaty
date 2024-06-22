@@ -14,8 +14,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ElectricBolt
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,13 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.miftah.sehaty.ui.theme.Grey30
-import com.miftah.sehaty.ui.theme.Grey50
-import com.miftah.sehaty.ui.theme.Grey70
+import com.miftah.sehaty.ui.screens.common.GradeNutrient
 import com.miftah.sehaty.ui.theme.SehatyTheme
-import com.miftah.sehaty.ui.theme.White30
-import com.miftah.sehaty.ui.theme.White50
-import com.miftah.sehaty.ui.theme.White70
 import com.miftah.sehaty.ui.theme.dimens
 
 @Composable
@@ -44,12 +37,14 @@ fun DetailNutrient(
     portion: String = "/g",
     nutrient: String,
     vector: ImageVector,
-    iconColor: Color
+    iconColor: Color,
+    containerColor : Color,
+    textColor: Color
 ) {
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(15.dp))
-            .background(MaterialTheme.colorScheme.secondary)
+            .background(containerColor)
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
@@ -64,22 +59,22 @@ fun DetailNutrient(
                 verticalAlignment = Alignment.Bottom
             ) {
                 Text(
-                    size,
+                    text = size,
                     style = MaterialTheme.typography.labelLarge.copy(
                         fontSize = 24.sp,
-                        color = MaterialTheme.colorScheme.onSecondary
+                        color = textColor
                     ),
                 )
                 Text(
                     modifier = Modifier.padding(start = 2.dp),
                     text = portion,
-                    color = MaterialTheme.colorScheme.onSecondary
+                    color = textColor
                 )
             }
             Text(
                 text = nutrient,
                 style = MaterialTheme.typography.labelSmall.copy(
-                    color = MaterialTheme.colorScheme.onSecondary,
+                    color = textColor,
                     fontWeight = FontWeight.SemiBold
                 )
             )
@@ -93,20 +88,14 @@ fun IconDetail(
     icon : ImageVector,
     color : Color
 ) {
-    Box(
-        modifier = modifier
-            .size(MaterialTheme.dimens.medium3)
-            .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primary),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            modifier = modifier,
-            imageVector = icon,
-            contentDescription = null,
-            tint = color
-        )
-    }
+    GradeNutrient(
+        fontSize = 25,
+        indicatorSize = 50,
+        percentage = 0.6f,
+        strokeWidth = 5,
+        indicatorColor = Color.Red,
+        score = "A"
+    )
 }
 
 @Preview(showBackground = true)
@@ -117,7 +106,9 @@ private fun DetailCardPreview() {
             size = "0.3",
             nutrient = "Energy",
             iconColor = MaterialTheme.colorScheme.onPrimary,
-            vector = Icons.Default.ElectricBolt
+            vector = Icons.Default.ElectricBolt,
+            containerColor = Color.Yellow,
+            textColor = Color.Red
         )
     }
 }

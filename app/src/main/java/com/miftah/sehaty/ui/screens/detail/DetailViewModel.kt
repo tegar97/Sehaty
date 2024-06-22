@@ -29,7 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     val saveScanningImageToCloud: SaveScanningImageToCloud,
-    val saveHistoryToDB : SaveHistoryToDB,
+    val saveHistoryToDB: SaveHistoryToDB,
     val accountIsActive: AccountIsActive
 ) : ViewModel() {
     private var _detailState = mutableStateOf(DetailState())
@@ -53,6 +53,7 @@ class DetailViewModel @Inject constructor(
         _detailState.value = _detailState.value.copy(
             foodAfterScan = foodAfterScan
         )
+        calculate()
     }
 
     private fun sendScanningNutrientToCloud() {
@@ -70,6 +71,24 @@ class DetailViewModel @Inject constructor(
                     saveFoodAfterScan = saveHistoryToDB(it.convertToHistoryScan())
                 )
             }
+        }
+    }
+
+    private fun calculate() {
+        var total = 0
+        _detailState.value.foodAfterScan?.let {
+            total = it.cholesterol
+                ?: (0 + it.totalCarbs + it.dietaryFiber + it.protein + it.sodium + it.sugars)
+            _detailState.value = _detailState.value.copy(
+                dataNutrientPercentage = NutrientPercentage(
+                    dietaryFiber = (it.dietaryFiber.toFloat()/total.toFloat())*1/100,
+                    totalCarbs = (it.totalCarbs.toFloat()/total.toFloat())*1/100,
+                    cholesterol = (it.cholesterol?.toFloat()?.div(total.toFloat()) ?: 0f)*1/100,
+                    sodium = (it.sodium.toFloat()/total.toFloat())*1/100,
+                    sugars = (it.sugars.toFloat()/total.toFloat())*1/100,
+                    protein = (it.protein.toFloat()/total.toFloat())*1/100
+                )
+            )
         }
     }
 
